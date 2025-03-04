@@ -1,66 +1,384 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# E-Commerce API - Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Une API RESTful complète pour une plateforme e-commerce modeste spécialisée dans la mode, développée avec Laravel.
 
-## About Laravel
+## Table des matières
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Aperçu](#aperçu)
+- [Fonctionnalités](#fonctionnalités)
+- [Structure du projet](#structure-du-projet)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Base de données](#base-de-données)
+- [Modèles et relations](#modèles-et-relations)
+- [API Endpoints](#api-endpoints)
+- [Authentification](#authentification)
+- [Gestion des médias](#gestion-des-médias)
+- [Validation](#validation)
+- [Autorisations](#autorisations)
+- [Exemples d'utilisation](#exemples-dutilisation)
+- [Tests](#tests)
+- [Déploiement](#déploiement)
+- [Licence](#licence)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Aperçu
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Cette API sert de backend pour une boutique en ligne de mode modeste. Elle gère les produits, catégories, commentaires utilisateurs, paniers d'achats et commandes à travers une interface RESTful complète. Elle est conçue pour être robuste, bien documentée et facilement extensible.
 
-## Learning Laravel
+## Fonctionnalités
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Gestion des produits** : CRUD complet, filtrage avancé, recherche
+- **Catégories hiérarchiques** : Structure parent-enfant pour une organisation optimale
+- **Système de commentaires** : Avis et notations sur les produits
+- **Paniers d'achats** : Gestion complète du processus d'achat
+- **Commandes** : Création et suivi des commandes
+- **Gestion des médias** : Upload et organisation des images produits
+- **Authentification et autorisation** : Sécurité basée sur les rôles et permissions
+- **Pagination** : Résultats paginés pour toutes les listes
+- **Validation** : Validation stricte des données entrantes
+- **Relations chargées à la demande** : Optimisation des performances
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Structure du projet
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```
+app/
+├── Http/
+│   ├── Controllers/     # Contrôleurs API
+│   ├── Requests/        # Classes de validation de requêtes
+│   └── Resources/       # Transformateurs de ressources API
+├── Models/              # Modèles Eloquent
+└── Utils/              # Classes utilitaires
+database/
+├── migrations/          # Migrations de base de données
+└── seeders/            # Données de test
+routes/
+└── api.php             # Définition des routes API
+```
 
-## Laravel Sponsors
+## Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. Cloner le dépôt
 
-### Premium Partners
+```bash
+git clone https://github.com/votre-nom/ecommerce-api.git
+cd ecommerce-api
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+2. Installer les dépendances
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Configurer l'environnement
 
-## Code of Conduct
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4. Configurer la base de données dans le fichier `.env`
 
-## Security Vulnerabilities
+5. Exécuter les migrations et les seeders
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan migrate --seed
+```
 
-## License
+6. Lancer le serveur
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan serve
+```
+
+## Configuration
+
+### Configuration de l'environnement
+
+Assurez-vous de configurer correctement les variables suivantes dans le fichier `.env` :
+
+```
+APP_NAME="E-Commerce API"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=ecommerce
+DB_USERNAME=root
+DB_PASSWORD=
+
+SANCTUM_STATEFUL_DOMAINS=localhost,localhost:8000
+SESSION_DOMAIN=localhost
+```
+
+### Configuration du stockage des médias
+
+Ce projet utilise la bibliothèque Spatie Media Library pour la gestion des médias. Configurer le stockage des médias :
+
+```bash
+php artisan storage:link
+```
+
+## Base de données
+
+### Diagramme de la base de données
+
+La base de données comprend les tables suivantes :
+
+- `users` - Utilisateurs du système
+- `categories` - Catégories de produits (hiérarchiques)
+- `products` - Produits disponibles à la vente
+- `product_comments` - Commentaires et évaluations sur les produits
+- `carts` - Paniers d'achat des utilisateurs
+- `cart_items` - Articles dans les paniers
+- `orders` - Commandes passées
+- `order_items` - Articles dans les commandes
+- `payments` - Informations de paiement
+
+### Migrations
+
+Toutes les migrations sont organisées avec des préfixes numériques pour contrôler l'ordre d'exécution. La principale migration créant les tables métier est `0001_01_01_000003_create_app_table.php`.
+
+### Données de test
+
+Des seeders sont fournis pour peupler la base de données avec des données de test. Le seeder principal `DatabaseSeeder` orchestre tous les autres seeders, notamment `CategorySeeder` qui crée une structure hiérarchique de catégories adaptée à une boutique de mode.
+
+## Modèles et relations
+
+Tous les modèles Eloquent sont définis avec leurs relations, garantissant une navigation fluide entre les entités liées.
+
+### Exemples de relations
+
+```php
+// Dans le modèle Product
+public function category()
+{
+    return $this->belongsTo(Category::class);
+}
+
+public function comments()
+{
+    return $this->hasMany(ProductComment::class);
+}
+
+// Dans le modèle Category
+public function children()
+{
+    return $this->hasMany(Category::class, 'parent_id');
+}
+
+public function parent()
+{
+    return $this->belongsTo(Category::class, 'parent_id');
+}
+```
+
+## API Endpoints
+
+### Produits
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/products` | Liste des produits (avec filtres) |
+| GET | `/api/products/{sku}` | Détails d'un produit |
+| POST | `/api/admin/products` | Créer un produit |
+| PUT | `/api/admin/products/{id}` | Mettre à jour un produit |
+| DELETE | `/api/admin/products/{id}` | Supprimer un produit |
+| GET | `/api/products/category/{slug}` | Produits par catégorie |
+| PATCH | `/api/admin/products/{id}/stock` | Mettre à jour le stock |
+| PATCH | `/api/admin/products/{id}/feature` | Mettre en avant un produit |
+
+### Catégories
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/categories` | Liste des catégories |
+| GET | `/api/categories/{slug}` | Détails d'une catégorie |
+| POST | `/api/admin/categories` | Créer une catégorie |
+| PUT | `/api/admin/categories/{id}` | Mettre à jour une catégorie |
+| DELETE | `/api/admin/categories/{id}` | Supprimer une catégorie |
+| PATCH | `/api/admin/categories/{id}/activate` | Activer une catégorie |
+| PATCH | `/api/admin/categories/{id}/deactivate` | Désactiver une catégorie |
+
+### Commentaires
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/products/{product}/comments` | Commentaires d'un produit |
+| POST | `/api/comments` | Ajouter un commentaire |
+| PUT | `/api/comments/{id}` | Modifier un commentaire |
+| DELETE | `/api/comments/{id}` | Supprimer un commentaire |
+| GET | `/api/admin/comments` | Admin: Liste des commentaires |
+| GET | `/api/admin/comments/stats` | Admin: Statistiques des commentaires |
+
+### Panier
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/cart` | Panier actuel de l'utilisateur |
+| POST | `/api/cart/items` | Ajouter un article au panier |
+| PUT | `/api/cart/items/{id}` | Modifier la quantité |
+| DELETE | `/api/cart/items/{id}` | Retirer un article |
+| DELETE | `/api/cart/clear` | Vider le panier |
+| GET | `/api/admin/carts` | Admin: Liste des paniers |
+| PATCH | `/api/admin/carts/{id}/mark-as-abandoned` | Admin: Marquer comme abandonné |
+
+### Médias
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| DELETE | `/api/admin/media/{id}` | Supprimer un média |
+| POST | `/api/admin/media/products/{id}/media/{media}/set-as-thumbnail` | Définir comme image principale |
+| POST | `/api/admin/media/products/{id}/reorder` | Réorganiser les images |
+
+## Authentification
+
+L'API utilise Laravel Sanctum pour l'authentification. Les tokens sont utilisés pour toutes les routes protégées.
+
+### Obtenir un token
+
+```
+POST /api/login
+{
+    "email": "utilisateur@exemple.com",
+    "password": "mot_de_passe"
+}
+```
+
+### Utiliser un token
+
+Inclure le token dans l'en-tête `Authorization` pour toutes les requêtes authentifiées :
+
+```
+Authorization: Bearer {token}
+```
+
+## Gestion des médias
+
+Le projet utilise Spatie Media Library pour gérer les médias associés aux produits. Les produits peuvent avoir :
+
+- Une collection `product_images` pour toutes les images du produit
+- Une collection `product_thumbnail` pour l'image principale
+
+### Téléchargement d'images
+
+```
+POST /api/admin/products
+Content-Type: multipart/form-data
+
+{
+    "name": "Produit Exemple",
+    "price": 29.99,
+    "category_id": "uuid-de-categorie",
+    "images[]": [fichier1, fichier2],
+    "thumbnail": fichier_principal
+}
+```
+
+### Récupération d'images
+
+Les URLs des images sont automatiquement incluses dans les réponses API via les ressources :
+
+```json
+{
+    "id": "uuid-produit",
+    "name": "Produit Exemple",
+    "thumbnail_url": "http://localhost:8000/storage/media/product_thumbnail/...",
+    "images": [
+        {
+            "id": "uuid-media",
+            "url": "http://localhost:8000/storage/media/product_images/...",
+            "thumb_url": "http://localhost:8000/storage/media/conversions/thumb/..."
+        }
+    ]
+}
+```
+
+## Validation
+
+Toutes les entrées sont validées à l'aide de classes dédiées dans le dossier `App\Http\Requests`. Exemples :
+
+- `StoreProductRequest` - Validation à la création d'un produit
+- `UpdateCartItemRequest` - Validation à la mise à jour d'un article du panier
+
+Ces classes définissent les règles de validation, les messages d'erreur personnalisés et les autorisations.
+
+## Autorisations
+
+Le système utilise une combinaison de rôles et permissions. Les middlewares `role` et `permission` sont utilisés sur les routes sensibles.
+
+Exemples de permissions :
+- `product.create`
+- `product.update`
+- `category.delete`
+- `cart.view`
+
+## Exemples d'utilisation
+
+### Récupérer tous les produits avec filtres
+
+```
+GET /api/products?category_id=uuid-categorie&min_price=20&max_price=50&in_stock=true&orderBy=price&orderDirection=asc&page=1&perPage=20
+```
+
+### Ajouter un produit au panier
+
+```
+POST /api/cart/items
+{
+    "product_id": "uuid-produit",
+    "quantity": 2
+}
+```
+
+### Mettre à jour le stock d'un produit
+
+```
+PATCH /api/admin/products/uuid-produit/stock
+{
+    "stock_quantity": 10,
+    "operation": "add"  // "add", "subtract" ou "set"
+}
+```
+
+## Tests
+
+Des tests automatisés peuvent être exécutés avec PHPUnit :
+
+```bash
+php artisan test
+```
+
+Les tests couvrent :
+- Les routes API
+- La validation des entrées
+- Les autorisations
+- Les fonctionnalités métier
+
+## Déploiement
+
+Pour déployer l'API en production :
+
+1. Configurer le fichier `.env` pour l'environnement de production
+2. Optimiser l'application
+
+```bash
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+3. Exécuter les migrations
+
+```bash
+php artisan migrate --force
+```
+
+4. Configurer un serveur web (Nginx/Apache) pour servir l'application
+
+## Licence
+
+Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
