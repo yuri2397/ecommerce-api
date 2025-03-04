@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCommentController;
@@ -49,6 +51,33 @@ Route::prefix('comments')->middleware(['auth:sanctum'])->group(function () {
     // Suppression d'un commentaire (l'utilisateur ne peut supprimer que ses propres commentaires)
     Route::delete('/{comment}', [ProductCommentController::class, 'destroy'])
         ->name('comments.destroy');
+});
+
+// Routes pour le panier (nécessitant authentification)
+Route::prefix('cart')->middleware(['auth:sanctum'])->group(function () {
+    // Récupérer le panier actuel de l'utilisateur
+    Route::get('/', [CartController::class, 'getCurrentCart'])
+        ->name('cart.current');
+
+    // Vider le panier
+    Route::delete('/clear', [CartController::class, 'clear'])
+        ->name('cart.clear');
+
+    // Ajouter un produit au panier
+    Route::post('/items', [CartItemController::class, 'addToCart'])
+        ->name('cart.items.add');
+
+    // Mettre à jour la quantité d'un article
+    Route::put('/items/{cartItem}', [CartItemController::class, 'updateQuantity'])
+        ->name('cart.items.update');
+
+    // Supprimer un article du panier
+    Route::delete('/items/{cartItem}', [CartItemController::class, 'removeFromCart'])
+        ->name('cart.items.remove');
+
+    // Liste des articles du panier
+    Route::get('/items', [CartItemController::class, 'index'])
+        ->name('cart.items.index');
 });
 
 // Routes admin (avec authentification et permissions)
