@@ -1,10 +1,13 @@
 <?php
 
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CartItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCommentController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CartItemController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderItemController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\MediaController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,46 +41,72 @@ Route::prefix('products')->group(function () {
         ->name('products.comments.index');
 });
 
-// Routes de commentaires (nécessitant authentification)
-Route::prefix('comments')->middleware(['auth:sanctum'])->group(function () {
-    // Création d'un commentaire
-    Route::post('/', [ProductCommentController::class, 'store'])
-        ->name('comments.store');
+// Routes nécessitant authentification
+Route::middleware(['auth:sanctum'])->group(function () {
+    // Routes de commentaires
+    Route::prefix('comments')->group(function () {
+        // Création d'un commentaire
+        Route::post('/', [ProductCommentController::class, 'store'])
+            ->name('comments.store');
 
-    // Mise à jour d'un commentaire
-    Route::put('/{comment}', [ProductCommentController::class, 'update'])
-        ->name('comments.update');
+        // Mise à jour d'un commentaire
+        Route::put('/{comment}', [ProductCommentController::class, 'update'])
+            ->name('comments.update');
 
-    // Suppression d'un commentaire (l'utilisateur ne peut supprimer que ses propres commentaires)
-    Route::delete('/{comment}', [ProductCommentController::class, 'destroy'])
-        ->name('comments.destroy');
-});
+        // Suppression d'un commentaire (l'utilisateur ne peut supprimer que ses propres commentaires)
+        Route::delete('/{comment}', [ProductCommentController::class, 'destroy'])
+            ->name('comments.destroy');
+    });
 
-// Routes pour le panier (nécessitant authentification)
-Route::prefix('cart')->middleware(['auth:sanctum'])->group(function () {
-    // Récupérer le panier actuel de l'utilisateur
-    Route::get('/', [CartController::class, 'getCurrentCart'])
-        ->name('cart.current');
+    // Routes pour le panier
+    Route::prefix('cart')->group(function () {
+        // Récupérer le panier actuel de l'utilisateur
+        Route::get('/', [CartController::class, 'getCurrentCart'])
+            ->name('cart.current');
 
-    // Vider le panier
-    Route::delete('/clear', [CartController::class, 'clear'])
-        ->name('cart.clear');
+        // Vider le panier
+        Route::delete('/clear', [CartController::class, 'clear'])
+            ->name('cart.clear');
 
-    // Ajouter un produit au panier
-    Route::post('/items', [CartItemController::class, 'addToCart'])
-        ->name('cart.items.add');
+        // Ajouter un produit au panier
+        Route::post('/items', [CartItemController::class, 'addToCart'])
+            ->name('cart.items.add');
 
-    // Mettre à jour la quantité d'un article
-    Route::put('/items/{cartItem}', [CartItemController::class, 'updateQuantity'])
-        ->name('cart.items.update');
+        // Mettre à jour la quantité d'un article
+        Route::put('/items/{cartItem}', [CartItemController::class, 'updateQuantity'])
+            ->name('cart.items.update');
 
-    // Supprimer un article du panier
-    Route::delete('/items/{cartItem}', [CartItemController::class, 'removeFromCart'])
-        ->name('cart.items.remove');
+        // Supprimer un article du panier
+        Route::delete('/items/{cartItem}', [CartItemController::class, 'removeFromCart'])
+            ->name('cart.items.remove');
 
-    // Liste des articles du panier
-    Route::get('/items', [CartItemController::class, 'index'])
-        ->name('cart.items.index');
+        // Liste des articles du panier
+        Route::get('/items', [CartItemController::class, 'index'])
+            ->name('cart.items.index');
+    });
+
+    // Routes pour les commandes (client)
+    Route::prefix('orders')->group(function () {
+        // Liste des commandes de l'utilisateur
+        Route::get('/', [OrderController::class, 'myOrders'])
+            ->name('orders.my-orders');
+
+        // Détail d'une commande
+        Route::get('/{order}', [OrderController::class, 'showMyOrder'])
+            ->name('orders.show');
+
+        // Créer une commande à partir du panier
+        Route::post('/checkout', [OrderController::class, 'createFromCart'])
+            ->name('orders.checkout');
+
+        // Annuler une commande
+        Route::patch('/{order}/cancel', [OrderController::class, 'cancelMyOrder'])
+            ->name('orders.cancel');
+
+        // Effectuer un paiement
+        Route::post('/{order}/pay', [PaymentController::class, 'processPayment'])
+            ->name('orders.pay');
+    });
 });
 
 // Routes admin (avec authentification et permissions)
@@ -170,6 +199,122 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
         Route::get('/stats', [ProductCommentController::class, 'stats'])
             ->name('comments.admin.stats')
             ->middleware('permission:comment.view');
+    });
+
+    // Routes admin pour les paniers
+    Route::prefix('carts')->group(function () {
+        Route::get('/', [CartController::class, 'index'])
+            ->name('carts.admin.index')
+            ->middleware('permission:cart.view');
+
+        Route::post('/', [CartController::class, 'store'])
+            ->name('carts.admin.store')
+            ->middleware('permission:cart.create');
+
+        Route::get('/{cart}', [CartController::class, 'show'])
+            ->name('carts.admin.show')
+            ->middleware('permission:cart.view');
+
+        Route::put('/{cart}', [CartController::class, 'update'])
+            ->name('carts.admin.update')
+            ->middleware('permission:cart.update');
+
+        Route::delete('/{cart}', [CartController::class, 'destroy'])
+            ->name('carts.admin.destroy')
+            ->middleware('permission:cart.delete');
+
+        Route::patch('/{cart}/clear', [CartController::class, 'clear'])
+            ->name('carts.admin.clear')
+            ->middleware('permission:cart.update');
+
+        Route::patch('/{cart}/mark-as-abandoned', [CartController::class, 'markAsAbandoned'])
+            ->name('carts.admin.mark-as-abandoned')
+            ->middleware('permission:cart.update');
+
+        Route::patch('/{cart}/mark-as-converted', [CartController::class, 'markAsConverted'])
+            ->name('carts.admin.mark-as-converted')
+            ->middleware('permission:cart.update');
+
+        Route::get('/stats', [CartController::class, 'stats'])
+            ->name('carts.admin.stats')
+            ->middleware('permission:cart.view');
+
+        Route::get('/{cart}/total', [CartItemController::class, 'calculateCartTotal'])
+            ->name('carts.admin.total')
+            ->middleware('permission:cart.view');
+    });
+
+    // Routes admin pour les commandes
+    Route::prefix('orders')->group(function () {
+        Route::get('/', [OrderController::class, 'index'])
+            ->name('orders.admin.index')
+            ->middleware('permission:order.view');
+
+        Route::get('/{order}', [OrderController::class, 'show'])
+            ->name('orders.admin.show')
+            ->middleware('permission:order.view');
+
+        Route::put('/{order}', [OrderController::class, 'update'])
+            ->name('orders.admin.update')
+            ->middleware('permission:order.update');
+
+        Route::delete('/{order}', [OrderController::class, 'destroy'])
+            ->name('orders.admin.destroy')
+            ->middleware('permission:order.delete');
+
+        Route::patch('/{order}/status', [OrderController::class, 'updateStatus'])
+            ->name('orders.admin.update-status')
+            ->middleware('permission:order.update');
+
+        Route::get('/stats', [OrderController::class, 'stats'])
+            ->name('orders.admin.stats')
+            ->middleware('permission:order.view');
+    });
+
+    // Routes admin pour les articles de commande
+    Route::prefix('order-items')->group(function () {
+        Route::get('/order/{order}', [OrderItemController::class, 'index'])
+            ->name('order-items.admin.index')
+            ->middleware('permission:order.view');
+
+        Route::get('/{orderItem}', [OrderItemController::class, 'show'])
+            ->name('order-items.admin.show')
+            ->middleware('permission:order.view');
+
+        Route::post('/order/{order}', [OrderItemController::class, 'store'])
+            ->name('order-items.admin.store')
+            ->middleware('permission:order.update');
+
+        Route::put('/{orderItem}', [OrderItemController::class, 'update'])
+            ->name('order-items.admin.update')
+            ->middleware('permission:order.update');
+
+        Route::delete('/{orderItem}', [OrderItemController::class, 'destroy'])
+            ->name('order-items.admin.destroy')
+            ->middleware('permission:order.update');
+    });
+
+    // Routes admin pour les paiements
+    Route::prefix('payments')->group(function () {
+        Route::get('/order/{order}', [PaymentController::class, 'index'])
+            ->name('payments.admin.index')
+            ->middleware('permission:payment.view');
+
+        Route::get('/{payment}', [PaymentController::class, 'show'])
+            ->name('payments.admin.show')
+            ->middleware('permission:payment.view');
+
+        Route::post('/order/{order}', [PaymentController::class, 'store'])
+            ->name('payments.admin.store')
+            ->middleware('permission:payment.create');
+
+        Route::put('/{payment}', [PaymentController::class, 'update'])
+            ->name('payments.admin.update')
+            ->middleware('permission:payment.update');
+
+        Route::delete('/{payment}', [PaymentController::class, 'destroy'])
+            ->name('payments.admin.destroy')
+            ->middleware('permission:payment.delete');
     });
 
     // Routes pour la gestion des médias
