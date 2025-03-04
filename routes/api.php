@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductCommentController;
 use App\Http\Controllers\MediaController;
 use Illuminate\Support\Facades\Route;
+
 // Routes publiques (sans authentification)
 Route::prefix('categories')->group(function () {
     // Liste publique des catégories
@@ -29,6 +31,24 @@ Route::prefix('products')->group(function () {
     Route::get('/category/{category:slug}', [ProductController::class, 'byCategory'])
         ->name('products.public.by-category');
 
+    // Routes pour les commentaires publics
+    Route::get('/{product}/comments', [ProductCommentController::class, 'getProductComments'])
+        ->name('products.comments.index');
+});
+
+// Routes de commentaires (nécessitant authentification)
+Route::prefix('comments')->middleware(['auth:sanctum'])->group(function () {
+    // Création d'un commentaire
+    Route::post('/', [ProductCommentController::class, 'store'])
+        ->name('comments.store');
+
+    // Mise à jour d'un commentaire
+    Route::put('/{comment}', [ProductCommentController::class, 'update'])
+        ->name('comments.update');
+
+    // Suppression d'un commentaire (l'utilisateur ne peut supprimer que ses propres commentaires)
+    Route::delete('/{comment}', [ProductCommentController::class, 'destroy'])
+        ->name('comments.destroy');
 });
 
 // Routes admin (avec authentification et permissions)
@@ -60,8 +80,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
             ->name('categories.admin.deactivate');
     });
 
-
-    // Routes CRUD principales
+    // Routes CRUD principales pour les produits
     Route::prefix('products')->group(function () {
         Route::get('/', [ProductController::class, 'index'])
             ->name('products.admin.index')
@@ -99,6 +118,29 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
 
         Route::get('/dropdown', [ProductController::class, 'dropdown']);
         Route::get('/stats', [ProductController::class, 'stats']);
+    });
+
+    // Routes admin pour les commentaires
+    Route::prefix('comments')->group(function () {
+        Route::get('/', [ProductCommentController::class, 'index'])
+            ->name('comments.admin.index')
+            ->middleware('permission:comment.view');
+
+        Route::get('/{comment}', [ProductCommentController::class, 'show'])
+            ->name('comments.admin.show')
+            ->middleware('permission:comment.view');
+
+        Route::put('/{comment}', [ProductCommentController::class, 'update'])
+            ->name('comments.admin.update')
+            ->middleware('permission:comment.update');
+
+        Route::delete('/{comment}', [ProductCommentController::class, 'destroy'])
+            ->name('comments.admin.destroy')
+            ->middleware('permission:comment.delete');
+
+        Route::get('/stats', [ProductCommentController::class, 'stats'])
+            ->name('comments.admin.stats')
+            ->middleware('permission:comment.view');
     });
 
     // Routes pour la gestion des médias
