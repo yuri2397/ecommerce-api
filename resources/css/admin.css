@@ -1,0 +1,163 @@
+/* Styles globaux pour l'administration */
+
+/* Reset et base */
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #495057;
+}
+
+/* Layout principal */
+#admin-app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Utilitaires */
+.p-float-label {
+    margin-bottom: 1.5rem;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #3f51b5;
+}
+
+/* Formulaires */
+.form-field {
+    margin-bottom: 1.5rem;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Tableaux */
+.data-table-wrapper {
+    margin-bottom: 2rem;
+}
+
+.table-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Pagination custom */
+.custom-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+/* États */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-active {
+    background-color: #e6f9e6;
+    color: #2e7d32;
+}
+
+.status-inactive {
+    background-color: #f9e6e6;
+    color: #d32f2f;
+}
+
+.status-pending {
+    background-color: #fff9e6;
+    color: #ed6c02;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .admin-sidebar {
+        position: fixed;
+        left: -250px;
+        top: 64px;
+        bottom: 0;
+        z-index: 1000;
+        transition: left 0.3s ease;
+    }
+
+    .admin-sidebar.open {
+        left: 0;
+    }
+
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+}
+
+@media (max-width: 576px) {
+    .admin-header {
+        padding: 0 1rem;
+    }
+
+    .site-name {
+        display: none;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+}

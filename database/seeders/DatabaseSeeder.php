@@ -13,10 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Exécuter les seeders dans le bon ordre
         $this->call([
-            CategorySeeder::class,
+            RolesAndPermissionsSeeder::class, // Créer d'abord les rôles et permissions
+            AdminUserSeeder::class,           // Ensuite créer l'utilisateur admin avec le rôle approprié
+            CategorySeeder::class,            // Seeder de catégories existant
+            // Autres seeders au besoin
         ]);
     }
 }
