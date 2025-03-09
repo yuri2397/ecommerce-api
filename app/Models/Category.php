@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Utils\UsesUuid;
-class Category extends Model
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+
+class Category extends Model implements HasMedia
 {
-    use UsesUuid;
+    const ICON_COLLECTION = 'icons';
+    use UsesUuid, InteractsWithMedia;
 
     protected $fillable = [
         'name',
@@ -19,13 +23,18 @@ class Category extends Model
     ];
 
     protected $appends = [
-        'products_count'
+        'products_count',
+        'icon_url'
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
 
+    public function getIconUrlAttribute()
+    {
+        return $this->getFirstMediaUrl(self::ICON_COLLECTION);
+    }
 
     // Sous-catégories
     public function children(): HasMany

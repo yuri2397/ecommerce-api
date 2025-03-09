@@ -11,6 +11,7 @@ class CategorySeeder extends Seeder
     public function run()
     {
         // Catégories principales
+
         $mainCategories = [
             [
                 'name' => 'Hijabs',
@@ -23,43 +24,46 @@ class CategorySeeder extends Seeder
                 ]
             ],
             [
-                'name' => 'Robes',
-                'description' => 'Robes modestes et tendance pour toutes les occasions',
+                'name' => 'Vêtements Homme',
+                'description' => 'Collection de vêtements traditionnels pour hommes',
                 'children' => [
-                    ['name' => 'Abaya', 'description' => 'Robes longues traditionnelles'],
-                    ['name' => 'Robe de Soirée', 'description' => 'Robes élégantes pour occasions spéciales'],
-                    ['name' => 'Robe Casual', 'description' => 'Robes pour le quotidien'],
-                    ['name' => 'Robe Kimono', 'description' => 'Robes avec coupe kimono moderne']
+                    ['name' => 'Qamis', 'description' => 'Tuniques longues élégantes et modestes'],
+                    ['name' => 'Sarouel', 'description' => 'Pantalons amples et confortables'],
+                    ['name' => 'Jabador', 'description' => 'Ensembles traditionnels marocains'],
+                    ['name' => 'Djellaba', 'description' => 'Vêtements amples à capuche pour toutes occasions']
                 ]
             ],
             [
-                'name' => 'Ensemble',
-                'description' => 'Coordonnés complets pour un look harmonieux',
+                'name' => 'Vêtements Femme',
+                'description' => 'Collection de tenues élégantes et modestes pour femmes',
                 'children' => [
-                    ['name' => 'Ensemble 2 Pièces', 'description' => 'Ensemble hijab + robe'],
-                    ['name' => 'Ensemble 3 Pièces', 'description' => 'Ensemble complet avec pantalon'],
-                    ['name' => 'Kimono Set', 'description' => 'Ensembles avec kimono assorti']
+                    ['name' => 'Abaya', 'description' => 'Robes longues et modestes pour toutes occasions'],
+                    ['name' => 'Jilbab', 'description' => 'Ensembles avec hijab intégré pour une couverture complète'],
+                    ['name' => 'Kimono', 'description' => 'Vestes longues et élégantes'],
                 ]
             ],
             [
-                'name' => 'Jupes et Pantalons',
-                'description' => 'Bas élégants et confortables',
+                'name' => 'Vêtements Enfant',
+                'description' => 'Mode islamique pour enfants, confortable et élégante',
                 'children' => [
-                    ['name' => 'Jupe Longue', 'description' => 'Jupes modestes et élégantes'],
-                    ['name' => 'Pantalon Large', 'description' => 'Pantalons fluides et confortables'],
-                    ['name' => 'Pantalon Palazzo', 'description' => 'Pantalons très amples']
+                    ['name' => 'Qamis Enfant', 'description' => 'Qamis traditionnels adaptés aux plus jeunes'],
+                    ['name' => 'Abaya Enfant', 'description' => 'Abayas légères et confortables pour petites filles'],
+                    ['name' => 'Hijab Enfant', 'description' => 'Hijabs adaptés aux enfants'],
+                    ['name' => 'Djellaba Enfant', 'description' => 'Vêtements traditionnels pour enfants']
                 ]
             ],
             [
                 'name' => 'Accessoires',
-                'description' => 'Compléments pour parfaire votre tenue',
+                'description' => 'Complétez votre style avec nos accessoires islamiques',
                 'children' => [
-                    ['name' => 'Broches', 'description' => 'Broches pour hijabs et vêtements'],
-                    ['name' => 'Châles', 'description' => 'Châles légers et élégants'],
-                    ['name' => 'Bijoux', 'description' => 'Bijoux discrets et raffinés']
+                    ['name' => 'Châles', 'description' => 'Châles élégants pour compléter vos tenues'],
+                    ['name' => 'Ceintures pour Abaya', 'description' => 'Ajoutez une touche d’élégance à votre abaya'],
+                    ['name' => 'Gants', 'description' => 'Gants élégants pour une couverture totale'],
+                    ['name' => 'Épingles & Broches', 'description' => 'Accessoires pour fixer et styliser votre hijab']
                 ]
             ]
         ];
+
 
         // Créer les catégories principales et leurs enfants
         foreach ($mainCategories as $mainCategoryData) {

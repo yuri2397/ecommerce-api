@@ -1,7 +1,11 @@
 <template>
     <AdminLayout>
         <div class="products-page">
-
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="card-title">Gestion des Produits</h1>
+                <Button label="Nouveau Produit" icon="pi pi-plus" class="p-button-success" @click="navigateToCreate" />
+            </div>
+            <br>
             <div class="card">
                 <div class="d-flex gap-2 align-items-center justify-content-between">
                     <div class="p-inputgroup d-flex w-100">

@@ -117,6 +117,7 @@ class CategoryController extends Controller
 
         // Charger les relations si demandé
         $relations = $validated['with'] ?? [];
+
         $category->load($this->validateRelations($relations));
 
         return new CategoryResource($category);
@@ -135,6 +136,10 @@ class CategoryController extends Controller
         // Création de la catégorie
         $category = Category::create($validated);
 
+        if ($request->hasFile('icon')) {
+            $category->addMediaFromRequest('icon')->toMediaCollection(Category::ICON_COLLECTION);
+        }
+
         return new CategoryResource($category);
     }
 
@@ -151,6 +156,10 @@ class CategoryController extends Controller
         }
 
         $category->update($validated);
+
+        if ($request->hasFile('icon')) {
+            $category->addMediaFromRequest('icon')->toMediaCollection(Category::ICON_COLLECTION);
+        }
 
         return new CategoryResource($category);
     }

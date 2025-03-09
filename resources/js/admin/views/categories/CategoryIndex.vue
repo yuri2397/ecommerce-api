@@ -34,7 +34,12 @@
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="{first} à {last} sur {totalRecords} catégories"
                     v-model:filters="tableFilters" filterDisplay="menu">
-
+                    <Column field="icon_url" header="Icone" sortable>
+                        <template #body="slotProps">
+                            <img :src="slotProps.data.icon_url" alt="Icone de la catégorie"
+                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+                        </template>
+                    </Column>
                     <Column field="name" header="Nom" sortable>
                         <template #body="slotProps">
                             <router-link :to="{ name: 'categories.edit', params: { id: slotProps.data.id } }"
@@ -311,7 +316,7 @@ export default {
 
 .action-buttons {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.8rem;
 }
 
 @media (max-width: 768px) {
