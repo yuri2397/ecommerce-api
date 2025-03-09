@@ -124,6 +124,9 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
         Route::get('/', [CategoryController::class, 'index'])
             ->name('categories.admin.index');
 
+        Route::get('/dropdown', [CategoryController::class, 'dropdown'])
+            ->name('categories.admin.dropdown');
+
         Route::post('/', [CategoryController::class, 'store'])
             ->name('categories.admin.store')
             ->middleware('permission:category.create');
@@ -144,6 +147,8 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
 
         Route::patch('/{category}/deactivate', [CategoryController::class, 'deactivate'])
             ->name('categories.admin.deactivate');
+
+
     });
 
     // Routes CRUD principales pour les produits

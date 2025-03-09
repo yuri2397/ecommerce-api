@@ -16,7 +16,8 @@ class OrderItem extends Model
         'order_id',
         'product_id',
         'quantity',
-        'price'
+        'price',
+        'discount_percentage'
     ];
 
     // Commande à laquelle appartient l'article
@@ -29,5 +30,10 @@ class OrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function getDiscountedPriceAttribute()
+    {
+        return $this->price * (1 - $this->discount_percentage / 100);
     }
 }

@@ -28,6 +28,7 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('sale_price', 10, 2)->nullable();
+            $table->integer('discount_percentage')->default(0);
             $table->string('sku')->unique();
             $table->integer('stock_quantity')->default(0);
             $table->uuid('category_id');
@@ -47,7 +48,6 @@ return new class extends Migration {
             $table->uuid('user_id');
             $table->text('content');
             $table->integer('rating')->nullable();
-            $table->integer('discount_percentage')->nullable();
             $table->timestamps();
 
             $table->foreign('product_id')
@@ -81,6 +81,7 @@ return new class extends Migration {
             $table->uuid('product_id');
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
+            $table->integer('discount_percentage')->default(0);
             $table->timestamps();
 
             $table->foreign('order_id')

@@ -25,6 +25,11 @@ class Product extends Model implements HasMedia
         'discount_percentage'
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+        'is_featured' => 'boolean',
+    ];
+
     // Catégorie du produit
     public function category(): BelongsTo
     {

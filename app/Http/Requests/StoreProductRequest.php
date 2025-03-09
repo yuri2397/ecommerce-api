@@ -50,7 +50,7 @@ class StoreProductRequest extends FormRequest
             ],
             'is_active' => [
                 'nullable',
-                'boolean'
+                'boolean'   
             ],
             'is_featured' => [
                 'nullable',
@@ -80,7 +80,9 @@ class StoreProductRequest extends FormRequest
             'price.min' => 'Le prix doit être supérieur ou égal à 0.',
             'sale_price.lte' => 'Le prix promotionnel doit être inférieur ou égal au prix normal.',
             'sku.unique' => 'Ce SKU est déjà utilisé par un autre produit.',
-            'category_id.exists' => 'La catégorie sélectionnée doit être active.'
+            'category_id.exists' => 'La catégorie sélectionnée doit être active.',
+            'is_active.boolean' => 'Le champ "Produit actif" doit être vrai ou faux.',
+            'is_featured.boolean' => 'Le champ "Mettre en avant" doit être vrai ou faux.'
         ];
     }
 }

@@ -1,96 +1,102 @@
 <template>
-    <div class="products-page">
-        <div class="card">
-            <div class="card-header">
+    <AdminLayout>
+        <div class="products-page">
+            <div class="d-flex justify-content-between align-items-center">
                 <h1 class="card-title">Gestion des Produits</h1>
                 <Button label="Nouveau Produit" icon="pi pi-plus" class="p-button-success" @click="navigateToCreate" />
             </div>
+            <br>
+            <div class="card">
+                <div class="d-flex gap-2 align-items-center justify-content-between">
+                    <div class="p-inputgroup d-flex w-100">
+                        <InputText class="w-100" v-model="filters.search" placeholder="Rechercher un produit..." />
+                        <Button icon="pi pi-search" class="mx-2 px-2" @click="loadProducts" label="Rechercher" />
+                    </div>
+                    <div class="d-flex gap-2 w-100 justify-content-end">
+                        <div class="p-inputgroup ">
+                            <Select v-model="filters.category_id" :options="categories" optionLabel="name"
+                                optionValue="id" placeholder="Sélectionner une catégorie" class="w-100" :filter="true"
+                                :showClear="true" @filter="onFilterCategories" :loading="loading" />
 
-            <div class="filter-bar">
-                <div class="p-inputgroup filter-input">
-                    <InputText v-model="filters.search" placeholder="Rechercher un produit..." />
-                    <Button icon="pi pi-search" @click="loadProducts" />
+                        </div>
+                        <div class="p-inputgroup filter-select">
+                            <Dropdown id="status-filter" v-model="filters.is_active" :options="statusOptions"
+                                optionLabel="name" optionValue="value" placeholder="Tous les statuts"
+                                @change="loadProducts" />
+                        </div>
+                    </div>
                 </div>
 
-                <div class="p-inputgroup filter-select">
-                    <label for="category-filter">Catégorie</label>
-                    <Dropdown id="category-filter" v-model="filters.category_id" :options="categories"
-                        optionLabel="name" optionValue="id" placeholder="Toutes les catégories"
-                        @change="loadProducts" />
-                </div>
 
-                <div class="p-inputgroup filter-select">
-                    <label for="status-filter">Statut</label>
-                    <Dropdown id="status-filter" v-model="filters.is_active" :options="statusOptions" optionLabel="name"
-                        optionValue="value" placeholder="Tous les statuts" @change="loadProducts" />
-                </div>
+                <DataTable :value="products" :loading="loading" stripedRows responsiveLayout="scroll" :paginator="true"
+                    :rows="10" :rowsPerPageOptions="[10, 20, 50]"
+                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    currentPageReportTemplate="{first} à {last} sur {totalRecords} produits"
+                    v-model:filters="tableFilters" filterDisplay="menu">
+                    <Column field="thumbnail_url" header="Image">
+                        <template #body="slotProps">
+                            <img :src="slotProps.data.thumbnail_url || '/img/no-image.png'" :alt="slotProps.data.name"
+                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+                        </template>
+                    </Column>
+
+                    <Column field="name" header="Nom" sortable>
+                        <template #body="slotProps">
+                            <router-link :to="{ name: 'products.edit', params: { id: slotProps.data.id } }"
+                                class="product-name-link">
+                                {{ slotProps.data.name }}
+                            </router-link>
+                        </template>
+                    </Column>
+
+                    <Column field="price" header="Prix" sortable>
+                        <template #body="slotProps">
+                            {{ formatPrice(slotProps.data.price) }}
+                            <span v-if="slotProps.data.sale_price" class="sale-price">
+                                {{ formatPrice(slotProps.data.sale_price) }}
+                            </span>
+                        </template>
+                    </Column>
+
+                    <Column field="category.name" header="Catégorie" sortable>
+                        <template #body="slotProps">
+                            <span v-if="slotProps.data.category">{{ slotProps.data.category.name }}</span>
+                            <span v-else>-</span>
+                        </template>
+                    </Column>
+
+                    <Column field="stock_quantity" header="Stock" sortable>
+                        <template #body="slotProps">
+                            <Badge v-if="slotProps.data.stock_quantity <= 0" severity="danger" value="Épuisé" />
+                            <Badge v-else-if="slotProps.data.stock_quantity <= 5" severity="warning"
+                                :value="slotProps.data.stock_quantity.toString()" />
+                            <Badge v-else severity="success" :value="slotProps.data.stock_quantity.toString()" />
+                        </template>
+                    </Column>
+
+                    <Column field="is_active" header="Statut" sortable>
+                        <template #body="slotProps">
+                            <Badge :severity="slotProps.data.is_active ? 'success' : 'danger'"
+                                :value="slotProps.data.is_active ? 'Actif' : 'Inactif'" />
+                        </template>
+                    </Column>
+
+                    <Column header="Actions" :exportable="false" style="min-width: 8rem">
+                        <template #body="slotProps">
+                            <div class="action-buttons">
+                                <Button icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-sm mr-2"
+                                    @click="editProduct(slotProps.data)" title="Modifier" />
+                                <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm"
+                                    @click="confirmDelete(slotProps.data)" title="Supprimer" />
+                            </div>
+                        </template>
+                    </Column>
+                </DataTable>
             </div>
 
-            <DataTable :value="products" :loading="loading" stripedRows responsiveLayout="scroll" :paginator="true"
-                :rows="10" :rowsPerPageOptions="[10, 20, 50]"
-                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                currentPageReportTemplate="{first} à {last} sur {totalRecords} produits" v-model:filters="tableFilters"
-                filterDisplay="menu">
-                <Column field="thumbnail_url" header="Image">
-                    <template #body="slotProps">
-                        <img :src="slotProps.data.thumbnail_url || '/img/no-image.png'" :alt="slotProps.data.name"
-                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
-                    </template>
-                </Column>
-
-                <Column field="name" header="Nom" sortable>
-                    <template #body="slotProps">
-                        <router-link :to="{ name: 'product-edit', params: { id: slotProps.data.id } }"
-                            class="product-name-link">
-                            {{ slotProps.data.name }}
-                        </router-link>
-                    </template>
-                </Column>
-
-                <Column field="price" header="Prix" sortable>
-                    <template #body="slotProps">
-                        {{ formatPrice(slotProps.data.price) }}
-                    </template>
-                </Column>
-
-                <Column field="category.name" header="Catégorie" sortable>
-                    <template #body="slotProps">
-                        <span v-if="slotProps.data.category">{{ slotProps.data.category.name }}</span>
-                        <span v-else>-</span>
-                    </template>
-                </Column>
-
-                <Column field="stock_quantity" header="Stock" sortable>
-                    <template #body="slotProps">
-                        <Badge v-if="slotProps.data.stock_quantity <= 0" severity="danger" value="Épuisé" />
-                        <Badge v-else-if="slotProps.data.stock_quantity <= 5" severity="warning"
-                            :value="slotProps.data.stock_quantity.toString()" />
-                        <Badge v-else severity="success" :value="slotProps.data.stock_quantity.toString()" />
-                    </template>
-                </Column>
-
-                <Column field="is_active" header="Statut" sortable>
-                    <template #body="slotProps">
-                        <Badge :severity="slotProps.data.is_active ? 'success' : 'danger'"
-                            :value="slotProps.data.is_active ? 'Actif' : 'Inactif'" />
-                    </template>
-                </Column>
-
-                <Column header="Actions" :exportable="false" style="min-width: 8rem">
-                    <template #body="slotProps">
-                        <div class="action-buttons">
-                            <Button icon="pi pi-pencil" class="p-button-rounded p-button-success p-button-sm mr-2"
-                                @click="editProduct(slotProps.data)" title="Modifier" />
-                            <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm"
-                                @click="confirmDelete(slotProps.data)" title="Supprimer" />
-                        </div>
-                    </template>
-                </Column>
-            </DataTable>
+            <ConfirmDialog></ConfirmDialog>
         </div>
-
-        <ConfirmDialog></ConfirmDialog>
-    </div>
+    </AdminLayout>
 </template>
 
 <script>
@@ -101,12 +107,14 @@ import { useConfirm } from 'primevue/useconfirm';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
-import Dropdown from 'primevue/dropdown';
+import Select from 'primevue/select';
 import Button from 'primevue/button';
 import Badge from 'primevue/badge';
 import ConfirmDialog from 'primevue/confirmdialog';
 import axios from 'axios';
 import { useAuthStore } from '../../store/auth';
+import { useCategoriesStore } from '../../store/categories';
+import AdminLayout from '../../components/layout/AdminLayout.vue';
 
 export default {
     name: 'ProductsIndex',
@@ -114,16 +122,18 @@ export default {
         DataTable,
         Column,
         InputText,
-        Dropdown,
+        Select,
         Button,
         Badge,
-        ConfirmDialog
+        ConfirmDialog,
+        AdminLayout
     },
     setup() {
         const router = useRouter();
         const toast = useToast();
         const confirm = useConfirm();
         const authStore = useAuthStore();
+        const categoriesStore = useCategoriesStore();
 
         const products = ref([]);
         const categories = ref([]);
@@ -149,7 +159,8 @@ export default {
                 // Construire les paramètres de requête
                 const params = {
                     with: ['category'],
-                    page: 1
+                    page: 1,
+                    per_page: 10
                 };
 
                 // Ajouter les filtres si présents
@@ -194,25 +205,35 @@ export default {
 
         const loadCategories = async () => {
             try {
-                const response = await axios.get('/api/admin/categories', {
-                    headers: {
-                        Authorization: `Bearer ${authStore.token}`
-                    }
-                });
-
-                categories.value = response.data.data;
+                await categoriesStore.fetchCategories();
+                categories.value = categoriesStore.categories;
             } catch (error) {
                 console.error('Erreur lors du chargement des catégories:', error);
             }
         };
 
+        const onFilterCategories = async (event) => {
+            try {
+                loading.value = true;
+
+                // Appel à l'API avec le terme de recherche
+                await categoriesStore.fetchCategories({ is_active: true, search: event.value });
+                categories.value = categoriesStore.categories;
+                categories.value = data;
+            } catch (error) {
+                console.error('Erreur lors de la recherche de catégories:', error);
+            } finally {
+                loading.value = false;
+            }
+        };
+
         const navigateToCreate = () => {
-            router.push({ name: 'product-create' });
+            router.push({ name: 'products.create' });
         };
 
         const editProduct = (product) => {
             router.push({
-                name: 'product-edit',
+                name: 'products.edit',
                 params: { id: product.id }
             });
         };
@@ -259,7 +280,7 @@ export default {
         const formatPrice = (price) => {
             return new Intl.NumberFormat('fr-FR', {
                 style: 'currency',
-                currency: 'EUR'
+                currency: 'xof'
             }).format(price);
         };
 
@@ -279,7 +300,8 @@ export default {
             navigateToCreate,
             editProduct,
             confirmDelete,
-            formatPrice
+            formatPrice,
+            onFilterCategories
         };
     }
 }
@@ -299,6 +321,7 @@ export default {
 }
 
 .filter-select {
+
     flex: 1;
     min-width: 200px;
 }
@@ -321,6 +344,13 @@ export default {
 .action-buttons {
     display: flex;
     gap: 0.5rem;
+}
+
+.sale-price {
+    color: #f44336;
+    margin-left: 0.5rem;
+    font-size: 0.9em;
+    text-decoration: line-through;
 }
 
 @media (max-width: 768px) {

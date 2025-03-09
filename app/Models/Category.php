@@ -18,6 +18,15 @@ class Category extends Model
         'is_active'
     ];
 
+    protected $appends = [
+        'products_count'
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+
     // Sous-catégories
     public function children(): HasMany
     {
@@ -34,5 +43,10 @@ class Category extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function getProductsCountAttribute()
+    {
+        return $this->products()->where('is_active', true)->count();
     }
 }

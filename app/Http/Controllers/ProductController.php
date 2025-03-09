@@ -9,6 +9,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -282,30 +283,40 @@ class ProductController extends Controller
     {
         $validated = $request->validated();
 
-        // Générer un SKU unique si non fourni
-        if (empty($validated['sku'])) {
-            $validated['sku'] = $this->generateUniqueSku($validated['name']);
-        }
+        DB::beginTransaction();
+        try {
+            // Générer un SKU unique si non fourni
+            if (empty($validated['sku'])) {
+                $validated['sku'] = $this->generateUniqueSku($validated['name']);
+            }
 
-        // Création du produit
-        $product = Product::create($validated);
+            // Création du produit
+            $product = Product::create($validated);
 
-        // Traitement des images
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $product->addMedia($image)
+            // Traitement des images
+            if ($request->hasFile('images')) {
+                // add many files from the request
+                $product->addMediaFromRequest('images')
                     ->toMediaCollection('product_images');
             }
-        }
 
-        // Traitement de l'image principale (thumbnail)
-        if ($request->hasFile('thumbnail')) {
-            $product->addMedia($request->file('thumbnail'))
-                ->toMediaCollection('product_thumbnail');
-        } elseif ($request->hasFile('images')) {
-            // Utiliser la première image comme thumbnail si aucune n'est spécifiée
-            $product->addMedia($request->file('images')[0])
-                ->toMediaCollection('product_thumbnail');
+            // Traitement de l'image principale (thumbnail)
+            if ($request->hasFile('thumbnail')) {
+                $product->addMedia($request->file('thumbnail'))
+                    ->toMediaCollection('product_thumbnail');
+            } elseif ($request->hasFile('images')) {
+                // Utiliser la première image comme thumbnail si aucune n'est spécifiée
+                $product->addMedia($request->file('images')[0])
+                    ->toMediaCollection('product_thumbnail');
+            }
+            DB::commit();
+            return new ProductResource($product);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Erreur lors de la création du produit',
+                'error' => $th->getMessage()
+            ], 500);
         }
 
         return new ProductResource($product);

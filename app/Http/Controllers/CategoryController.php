@@ -36,7 +36,7 @@ class CategoryController extends Controller
                 Rule::in($this->allowedRelations)
             ],
             'filter' => 'nullable|array',
-            'filter.is_active' => 'nullable|boolean',
+            'filter.is_active' => 'nullable|in:true,false',
             'filter.has_parent' => 'nullable|boolean',
             'filter.has_no_parent' => 'nullable|boolean'
         ]);
@@ -48,7 +48,7 @@ class CategoryController extends Controller
         $orderDirection = $validated['orderDirection'] ?? 'desc';
 
         // Requête de base
-        $query = Category::query();
+        $query = Category::with($request->with ?? []);
 
         // Filtres
         $this->applyFilters($query, $validated['filter'] ?? []);
@@ -64,9 +64,6 @@ class CategoryController extends Controller
         // Tri
         $query->orderBy($orderBy, $orderDirection);
 
-        // Charger les relations si demandé
-        $relations = $validated['with'] ?? [];
-        $query->with($this->validateRelations($relations));
 
         // Pagination
         $categories = $query->paginate($perPage, ['*'], 'page', $page);
@@ -89,8 +86,8 @@ class CategoryController extends Controller
     protected function applyFilters($query, array $filters)
     {
         // Filtre par statut actif
-        if (isset($filters['is_active'])) {
-            $query->where('is_active', $filters['is_active']);
+        if (isset($filters['is_active']) && $filters['is_active'] !== null) {
+            $query->where('is_active', (bool) $filters['is_active']);
         }
 
         // Catégories avec parent
@@ -199,7 +196,7 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'parent_id' => 'nullable|uuid|exists:categories,id',
-            'is_active' => 'nullable|boolean'
+            'is_active' => 'nullable'
         ]);
 
         $query = Category::query();
@@ -209,7 +206,7 @@ class CategoryController extends Controller
         }
 
         if (isset($validated['is_active'])) {
-            $query->where('is_active', $validated['is_active']);
+            $query->where('is_active', (bool) $validated['is_active']);
         }
 
         return CategoryDropdownResource::collection(

@@ -4,8 +4,10 @@ import Dashboard from '../views/dashboard/Dashboard.vue';
 import { useAuthStore } from '../store/auth';
 import ProductsIndex from '../views/products/ProductsIndex.vue';
 import ProductCreate from '../views/products/ProductCreate.vue';
-import CreateCategory from '../views/categories/CreateCategory.vue';
 import CategoryIndex from '../views/categories/CategoryIndex.vue';
+import CreateCategory from '../views/categories/CreateCategory.vue';
+import EditCategory from '../views/categories/EditCategory.vue';
+import ProductEdit from '../views/products/ProductEdit.vue';
 const routes = [
     {
         path: '/admin/login',
@@ -19,9 +21,10 @@ const routes = [
         component: Dashboard,
         meta: { requiresAuth: true }
     },
+    // Routes pour les produits
     {
         path: '/admin/products',
-        name: 'products',
+        name: 'products.index',
         component: ProductsIndex,
         meta: { requiresAuth: true }
     },
@@ -31,12 +34,23 @@ const routes = [
         component: ProductCreate,
         meta: { requiresAuth: true }
     },
-
-    // categories
+    {
+        path: '/admin/products/:id',
+        name: 'products.edit',
+        component: ProductEdit,
+        meta: { requiresAuth: true }
+    },
+    // Routes pour les catégories
     {
         path: '/admin/categories',
-        name: 'categories',
+        name: 'categories.index',
         component: CategoryIndex,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/admin/categories/:id',
+        name: 'categories.edit',
+        component: EditCategory,
         meta: { requiresAuth: true }
     },
     {
@@ -62,7 +76,7 @@ router.beforeEach((to, from, next) => {
     const authStore = useAuthStore();
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth !== false);
     const alreadyLoggedIn = authStore.isAuthenticated;
-    console.log('ALREADY LOGGED IN', alreadyLoggedIn)
+
     // Si la route requiert l'authentification et l'utilisateur n'est pas connecté
     if (requiresAuth && !alreadyLoggedIn) {
         next({ name: 'login' });

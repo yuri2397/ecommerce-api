@@ -9,7 +9,7 @@
 <script>
 import { ref } from 'vue';
 import PanelMenu from 'primevue/panelmenu';
-
+import router from '../../router';
 export default {
     name: 'AdminSidebar',
     components: {
@@ -20,12 +20,11 @@ export default {
             {
                 label: 'Tableau de bord',
                 icon: 'pi pi-home',
-                to: '/admin'
-            },
-            {
-                label: 'Catégories',
-                icon: 'pi pi-tags',
-                to: { name: 'categories' }
+                to: '/admin',
+                command: () => {
+                    console.log('Tableau de bord');
+                    router.push({ name: 'dashboard' });
+                }
             },
             {
                 label: 'Catalogue',
@@ -34,34 +33,42 @@ export default {
                     {
                         label: 'Produits',
                         icon: 'pi pi-shopping-bag',
-                        to: '/admin/products'
+                        to: { name: 'products.index' },
+                        command: () => {
+                            console.log('Produits');
+                            router.push({ name: 'products.index' });
+                        }
                     },
                     {
                         label: 'Catégories',
                         icon: 'pi pi-tags',
-                        to: '/admin/categories'
+                        to: { name: 'categories.index' },
+                        command: () => {
+                            console.log('Catégories');
+                            router.push({ name: 'categories.index' });
+                        }
                     }
                 ]
             },
             {
                 label: 'Commandes',
                 icon: 'pi pi-shopping-cart',
-                to: '/admin/orders'
+                to: { name: 'orders.index' }
             },
             {
                 label: 'Clients',
                 icon: 'pi pi-users',
-                to: '/admin/customers'
+                to: { name: 'customers.index' }
             },
             {
                 label: 'Avis & Commentaires',
                 icon: 'pi pi-comments',
-                to: '/admin/comments'
+                to: { name: 'comments.index' }
             },
             {
                 label: 'Paramètres',
                 icon: 'pi pi-cog',
-                to: '/admin/settings'
+                to: { name: 'settings.index' }
             }
         ]);
 

@@ -1,78 +1,67 @@
 <template>
-    <div class="dashboard-layout">
-        <AdminHeader />
-
-        <div class="dashboard-container">
-            <AdminSidebar />
-
-            <div class="dashboard-content">
-                <div class="card">
-                    <h1>Tableau de bord</h1>
-                    <p>Bienvenue dans le panneau d'administration</p>
-                    <div class="dashboard-stats">
-                        <div class="stat-card">
-                            <i class="pi pi-shopping-bag"></i>
-                            <div class="stat-info">
-                                <span class="stat-value">{{ stats.products }}</span>
-                                <span class="stat-label">Produits</span>
-                            </div>
-                        </div>
-
-                        <div class="stat-card">
-                            <i class="pi pi-list"></i>
-                            <div class="stat-info">
-                                <span class="stat-value">{{ stats.categories }}</span>
-                                <span class="stat-label">Catégories</span>
-                            </div>
-                        </div>
-
-                        <div class="stat-card">
-                            <i class="pi pi-shopping-cart"></i>
-                            <div class="stat-info">
-                                <span class="stat-value">{{ stats.orders }}</span>
-                                <span class="stat-label">Commandes</span>
-                            </div>
-                        </div>
-
-                        <div class="stat-card">
-                            <i class="pi pi-users"></i>
-                            <div class="stat-info">
-                                <span class="stat-value">{{ stats.users }}</span>
-                                <span class="stat-label">Utilisateurs</span>
-                            </div>
-                        </div>
+    <AdminLayout>
+        <div class="card">
+            <h1>Tableau de bord</h1>
+            <p>Bienvenue dans le panneau d'administration</p>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <i class="pi pi-shopping-bag"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ stats.products }}</span>
+                        <span class="stat-label">Produits</span>
                     </div>
+                </div>
 
-                    <div class="recent-orders">
-                        <h2>Commandes récentes</h2>
-                        <!-- Un tableau de commandes récentes serait ici -->
-                        <DataTable :value="orders" :paginator="true" :rows="10" :rowsPerPageOptions="[10, 20, 50]"
-                            :totalRecords="totalRecords" :loading="loading">
-                            <Column field="id" header="ID"></Column>
-                            <Column field="customer" header="Client"></Column>
-                            <Column field="date" header="Date"></Column>
-                            <Column field="total" header="Total"></Column>
-                        </DataTable>
+                <div class="stat-card">
+                    <i class="pi pi-list"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ stats.categories }}</span>
+                        <span class="stat-label">Catégories</span>
+                    </div>
+                </div>
 
+                <div class="stat-card">
+                    <i class="pi pi-shopping-cart"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ stats.orders }}</span>
+                        <span class="stat-label">Commandes</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <i class="pi pi-users"></i>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ stats.users }}</span>
+                        <span class="stat-label">Utilisateurs</span>
                     </div>
                 </div>
             </div>
+
+            <div class="recent-orders">
+                <h2>Commandes récentes</h2>
+                <!-- Un tableau de commandes récentes serait ici -->
+                <DataTable :value="orders" :paginator="true" :rows="10" :rowsPerPageOptions="[10, 20, 50]"
+                    :totalRecords="totalRecords" :loading="loading">
+                    <Column field="id" header="ID"></Column>
+                    <Column field="customer" header="Client"></Column>
+                    <Column field="date" header="Date"></Column>
+                    <Column field="total" header="Total"></Column>
+                </DataTable>
+            </div>
         </div>
-    </div>
+    </AdminLayout>
 </template>
 
 <script>
 import { ref, onMounted } from 'vue';
-import AdminHeader from '../../components/layout/AdminHeader.vue';
-import AdminSidebar from '../../components/layout/AdminSidebar.vue';
+import AdminLayout from '../../components/layout/AdminLayout.vue';
 import axios from 'axios';
 import { useAuthStore } from '../../store/auth';
 
 export default {
     name: 'DashboardView',
     components: {
-        AdminHeader,
-        AdminSidebar
+        AdminLayout
     },
     setup() {
         const authStore = useAuthStore();
@@ -82,6 +71,9 @@ export default {
             orders: 0,
             users: 0
         });
+        const orders = ref([]);
+        const totalRecords = ref(0);
+        const loading = ref(false);
 
         const fetchStats = async () => {
             try {
@@ -110,30 +102,16 @@ export default {
         });
 
         return {
-            stats
+            stats,
+            orders,
+            totalRecords,
+            loading
         };
     }
 }
 </script>
 
 <style scoped>
-.dashboard-layout {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-.dashboard-container {
-    display: flex;
-    flex: 1;
-}
-
-.dashboard-content {
-    flex: 1;
-    padding: 1.5rem;
-    background-color: #f5f7f9;
-}
-
 .card {
     background-color: white;
     border-radius: 8px;

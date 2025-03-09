@@ -6,6 +6,7 @@ import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 import Aura from '@primeuix/themes/aura';
+import 'primeicons/primeicons.css'
 
 // Composants PrimeVue fréquemment utilisés
 import Button from 'primevue/button';
