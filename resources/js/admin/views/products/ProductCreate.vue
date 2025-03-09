@@ -123,7 +123,7 @@ import { useAuthStore } from '../../store/auth';
 import { useCategoriesStore } from '../../store/categories';
 import AdminLayout from '../../components/layout/AdminLayout.vue';
 import Select from 'primevue/select';
-
+import { useProductsStore } from '../../store/products';
 export default {
     name: 'ProductCreate',
     components: {
@@ -141,7 +141,7 @@ export default {
         const toast = useToast();
         const authStore = useAuthStore();
         const categoriesStore = useCategoriesStore();
-
+        const productsStore = useProductsStore();
         const submitted = ref(false);
         const saving = ref(false);
         const categories = ref([]);
@@ -235,12 +235,8 @@ export default {
                     formData.append('thumbnail', uploadedImages.value[thumbnailIndex.value].file);
                 }
 
-                const response = await axios.post('/api/admin/products', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        Authorization: `Bearer ${authStore.token}`
-                    }
-                });
+                // utiliser la fonction createProduct du store
+                await productsStore.createProduct(formData);
 
                 toast.add({
                     severity: 'success',
@@ -250,7 +246,7 @@ export default {
                 });
 
                 // Redirection vers la liste des produits
-                router.push({ name: 'products' });
+                router.push({ name: 'products.index' });
             } catch (error) {
                 console.error('Erreur lors de la création du produit:', error);
                 toast.add({
@@ -307,7 +303,7 @@ export default {
         };
 
         const navigateBack = () => {
-            router.push({ name: 'products' });
+            router.push({ name: 'products.index' });
         };
 
         onMounted(() => {

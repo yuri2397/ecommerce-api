@@ -42,7 +42,7 @@
 
                     <Column field="name" header="Nom" sortable>
                         <template #body="slotProps">
-                            <router-link :to="{ name: 'products.edit', params: { id: slotProps.data.id } }"
+                            <router-link :to="{ name: 'products.show', params: { id: slotProps.data.id } }"
                                 class="product-name-link">
                                 {{ slotProps.data.name }}
                             </router-link>

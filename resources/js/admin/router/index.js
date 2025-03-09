@@ -8,6 +8,7 @@ import CategoryIndex from '../views/categories/CategoryIndex.vue';
 import CreateCategory from '../views/categories/CreateCategory.vue';
 import EditCategory from '../views/categories/EditCategory.vue';
 import ProductEdit from '../views/products/ProductEdit.vue';
+import ProductDetails from '../views/products/ProductDetails.vue';
 const routes = [
     {
         path: '/admin/login',
@@ -38,6 +39,12 @@ const routes = [
         path: '/admin/products/:id',
         name: 'products.edit',
         component: ProductEdit,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/admin/products/:id',
+        name: 'products.show',
+        component: ProductDetails,
         meta: { requiresAuth: true }
     },
     // Routes pour les catégories
