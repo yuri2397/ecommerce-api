@@ -1,10 +1,11 @@
 <template>
     <div class="login-container">
         <div class="login-panel">
-            <Card>
+            <Card class="login-card">
                 <template #title>
                     <h2 class="login-title">Administration</h2>
                     <p class="login-subtitle">Connectez-vous pour accéder à l'administration</p>
+                    <br>
                 </template>
                 <template #content>
                     <form @submit.prevent="handleLogin" class="p-fluid">
@@ -30,6 +31,7 @@
                         <div v-if="error" class="p-error mt-3">{{ error }}</div>
                     </form>
                 </template>
+
             </Card>
         </div>
     </div>
@@ -82,6 +84,8 @@ export default {
             }
         };
 
+
+
         return {
             email,
             password,
@@ -100,46 +104,80 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f5f7f9;
+    background-color: #f5f5f5;
 }
 
-.login-panel {
-    width: 100%;
-    max-width: 450px;
-    padding: 0 1rem;
+.login-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
-}
+    .login-title {
+        margin-top: 0;
+        text-align: center;
+        color: #001d3d;
+    }
 
-.login-title {
-    margin-top: 0;
-    text-align: center;
-    color: #3f51b5;
-}
+    .login-subtitle {
+        text-align: center;
+        font-weight: lighter;
+        font-size: 1.2rem;
+        width: 100%;
+        color: #001d3d;
+        max-width: 450px;
+        padding: 0 1rem;
+        margin: 0 auto;
+    }
 
-.login-subtitle {
-    text-align: center;
-    font-weight: normal;
-    font-size: 1.2rem;
-    color: #fff;
-}
+    .field {
+        margin-bottom: 1.5rem;
+        width: 100%;
 
-.field {
-    margin-bottom: 1.5rem;
-}
+        .p-inputtext,
+        .p-password {
+            width: 100%;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            border: none;
+            padding: 1rem;
+            color: #001d3d;
 
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.1);
+                border: 2px solid #197278;
+            }
+        }
 
-.p-error {
-    color: #f44336;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
+        .p-password {
+            width: 100%;
+            padding: .5rem;
+            input {
+                padding: .5rem;
+                background-color: #f5f5f5;
+            }
+        }
 
-.mt-3 {
-    margin-top: 1rem;
+
+
+    }
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #001d3d;
+    }
+
+    .p-error {
+        color: #f44336;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .mt-3 {
+        margin-top: 1rem;
+    }
 }
 </style>

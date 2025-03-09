@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
-        user: null,
+        user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
         token: localStorage.getItem('auth_token'),
         loading: false,
         error: null
@@ -56,6 +56,7 @@ export const useAuthStore = defineStore('auth', {
                 });
 
                 this.user = response.data;
+                localStorage.setItem('user', JSON.stringify(this.user));
                 return this.user;
             } catch (error) {
                 this.user = null;

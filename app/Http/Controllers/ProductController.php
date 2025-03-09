@@ -22,6 +22,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+
         // Validation des paramètres de requête
         $validated = $request->validate([
             'page' => 'integer|min:1',

@@ -9,7 +9,6 @@
                 <div class="card">
                     <h1>Tableau de bord</h1>
                     <p>Bienvenue dans le panneau d'administration</p>
-
                     <div class="dashboard-stats">
                         <div class="stat-card">
                             <i class="pi pi-shopping-bag"></i>
@@ -47,6 +46,14 @@
                     <div class="recent-orders">
                         <h2>Commandes récentes</h2>
                         <!-- Un tableau de commandes récentes serait ici -->
+                        <DataTable :value="orders" :paginator="true" :rows="10" :rowsPerPageOptions="[10, 20, 50]"
+                            :totalRecords="totalRecords" :loading="loading">
+                            <Column field="id" header="ID"></Column>
+                            <Column field="customer" header="Client"></Column>
+                            <Column field="date" header="Date"></Column>
+                            <Column field="total" header="Total"></Column>
+                        </DataTable>
+
                     </div>
                 </div>
             </div>
