@@ -55,8 +55,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import AdminLayout from '../../components/layout/AdminLayout.vue';
-import axios from 'axios';
-import { useAuthStore } from '../../store/auth';
+import { useDashboardStore } from '../../store/dashboard';
 
 export default {
     name: 'DashboardView',
@@ -64,7 +63,8 @@ export default {
         AdminLayout
     },
     setup() {
-        const authStore = useAuthStore();
+        const dashboardStore = useDashboardStore();
+
         const stats = ref({
             products: 0,
             categories: 0,
@@ -77,14 +77,8 @@ export default {
 
         const fetchStats = async () => {
             try {
-                // Exemple de requête pour obtenir des statistiques (à adapter à votre API)
-                const response = await axios.get('/api/admin/dashboard/stats', {
-                    headers: {
-                        Authorization: `Bearer ${authStore.token}`
-                    }
-                });
-
-                stats.value = response.data;
+                await dashboardStore.fetchStats();
+                stats.value = dashboardStore.stats;
             } catch (error) {
                 console.error('Erreur lors de la récupération des statistiques:', error);
                 // Valeurs par défaut pour la démonstration

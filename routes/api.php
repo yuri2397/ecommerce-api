@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCommentController;
@@ -119,6 +120,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 // Routes admin (avec authentification et permissions)
 Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(function () {
+
+    // Route pour le dashboard admin
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/stats', [AdminDashboardController::class, 'stats'])
+            ->name('admin.dashboard.stats');
+    });
+
     // Routes pour les catégories
     Route::prefix('categories')->group(function () {
         Route::get('/', [CategoryController::class, 'index'])
