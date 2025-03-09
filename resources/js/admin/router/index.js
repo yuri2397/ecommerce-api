@@ -42,8 +42,8 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
-        path: '/admin/products/:id',
-        name: 'products.show',
+        path: '/admin/products/:id/details',
+        name: 'products.details',
         component: ProductDetails,
         meta: { requiresAuth: true }
     },

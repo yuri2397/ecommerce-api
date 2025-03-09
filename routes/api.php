@@ -173,6 +173,10 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
             ->name('products.admin.destroy')
             ->middleware('permission:product.delete');
 
+        Route::put('/{product}/thumbnail/{media}', [ProductController::class, 'updateThumbnail'])
+            ->name('products.admin.updateThumbnail')
+            ->middleware('permission:product.update');
+
         // Routes pour la gestion des stocks
         Route::patch('/{product}/stock', [ProductController::class, 'updateStock'])
             ->name('products.admin.updateStock')
@@ -189,6 +193,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
 
         Route::get('/dropdown', [ProductController::class, 'dropdown']);
         Route::get('/stats', [ProductController::class, 'stats']);
+
     });
 
     // Routes admin pour les commentaires

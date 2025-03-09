@@ -12,11 +12,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductController extends Controller
 {
     // Liste des relations autorisées
-    protected $allowedRelations = ['category', 'comments'];
+    protected $allowedRelations = ['category', 'comments', 'with_images'];
 
     /**
      * Afficher la liste des produits
@@ -277,6 +278,17 @@ class ProductController extends Controller
     }
 
     /**
+     * Mettre à jour l'image principale d'un produi t
+     */
+    public function updateThumbnail(Request $request, Product $product, Media $media)
+    {
+            // remplacer le media par le nouveau media
+            $product->thumbnail = $media;
+            $product->save();
+
+        return new ProductResource($product);
+    }
+    /**
      * Création d'un nouveau produit
      */
     public function store(StoreProductRequest $request)
@@ -296,8 +308,10 @@ class ProductController extends Controller
             // Traitement des images
             if ($request->hasFile('images')) {
                 // add many files from the request
-                $product->addMediaFromRequest('images')
-                    ->toMediaCollection('product_images');
+                foreach ($request->file('images') as $image) {
+                    $product->addMedia($image)
+                        ->toMediaCollection('product_images');
+                }
             }
 
             // Traitement de l'image principale (thumbnail)

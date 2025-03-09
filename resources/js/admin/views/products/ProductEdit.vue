@@ -9,141 +9,132 @@
             </div>
             <div class="card">
 
-
                 <div v-if="loading" class="loading-container">
                     <ProgressSpinner />
                     <p>Chargement du produit...</p>
                 </div>
 
                 <form v-else @submit.prevent="saveProduct" class="p-fluid">
-                    <div class="form-grid">
-                        <!-- Colonne principale -->
-                        <div class="form-main-column">
-                            <div class="field">
-                                <label for="name">Nom du produit*</label>
-                                <InputText id="name" v-model="product.name"
-                                    :class="{ 'p-invalid': submitted && !product.name }" aria-required="true" />
-                                <small v-if="submitted && !product.name" class="p-error">Le nom du produit est
-                                    requis</small>
-                            </div>
-
-                            <div class="field">
-                                <label for="sku">SKU</label>
-                                <InputText id="sku" v-model="product.sku" />
-                            </div>
-
-                            <div class="field">
-                                <label for="description">Description</label>
-                                <Editor id="description" v-model="product.description" editorStyle="height: 250px" />
-                            </div>
-
-                            <div class="field-group">
-                                <div class="field">
-                                    <label for="price">Prix*</label>
-                                    <InputNumber id="price" v-model="product.price" mode="currency" currency="EUR"
-                                        locale="fr-FR" :minFractionDigits="2"
-                                        :class="{ 'p-invalid': submitted && !product.price }" aria-required="true" />
-                                    <small v-if="submitted && !product.price" class="p-error">Le prix est requis</small>
-                                </div>
-
-                                <div class="field">
-                                    <label for="sale_price">Prix promotionnel</label>
-                                    <InputNumber id="sale_price" v-model="product.sale_price" mode="currency"
-                                        currency="EUR" locale="fr-FR" :minFractionDigits="2" />
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <label for="stock_quantity">Quantité en stock*</label>
-                                <InputNumber id="stock_quantity" v-model="product.stock_quantity" showButtons :min="0"
-                                    :step="1" :class="{ 'p-invalid': submitted && product.stock_quantity === null }"
-                                    aria-required="true" />
-                                <small v-if="submitted && product.stock_quantity === null" class="p-error">La quantité
-                                    en stock est requise</small>
-                            </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="name">Nom du produit <span class="text-danger">*</span></label>
+                            <InputText id="name" class="w-100" v-model="product.name"
+                                :class="{ 'p-invalid': submitted && !product.name }" aria-required="true" />
+                            <small v-if="submitted && !product.name" class="p-error">Le nom du produit est
+                                requis</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="price">Prix normal <span class="text-danger">*</span></label>
+                            <InputNumber id="price" class="w-100" v-model="product.price" mode="currency" currency="XOF"
+                                locale="fr-FR" :minFractionDigits="0"
+                                :class="{ 'p-invalid': submitted && !product.price }" aria-required="true" />
+                            <small v-if="submitted && !product.price" class="p-error">Le prix est requis</small>
                         </div>
 
-                        <!-- Colonne secondaire -->
-                        <div class="form-side-column">
-                            <div class="field">
-                                <label for="category_id">Catégorie*</label>
-                                <Dropdown id="category_id" v-model="product.category_id" :options="categories"
-                                    optionLabel="name" optionValue="id" placeholder="Sélectionner une catégorie"
-                                    :class="{ 'p-invalid': submitted && !product.category_id }" aria-required="true" />
-                                <small v-if="submitted && !product.category_id" class="p-error">La catégorie est
-                                    requise</small>
-                            </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="sale_price">Prix de vente <span class="text-danger">*</span></label>
+                            <InputNumber class="w-100" id="sale_price" placeholder="0" v-model="product.sale_price"
+                                mode="currency" currency="XOF" locale="fr-FR" :minFractionDigits="0" />
+                            <small v-if="submitted && !product.sale_price" class="p-error">Le prix de vente
+                                est requis</small>
+                        </div>
 
-                            <div class="field">
+                        <div class="col-md-6">
+                            <label for="stock_quantity">Quantité en stock <span class="text-danger">*</span></label>
+                            <InputNumber class="w-100" id="stock_quantity" v-model="product.stock_quantity" showButtons
+                                :min="0" :step="1"
+                                :class="{ 'p-invalid': submitted && product.stock_quantity === null }"
+                                aria-required="true" />
+                            <small v-if="submitted && product.stock_quantity === null" class="p-error">La quantité
+                                en stock est requise</small>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="category_id">Catégorie <span class="text-danger">*</span></label>
+                            <Select v-model="product.category_id" :options="categories" optionLabel="name"
+                                optionValue="id" placeholder="Sélectionner une catégorie" class="w-100" :filter="true"
+                                :showClear="true" @filter="onFilterCategories" :loading="loading" />
+                            <small v-if="submitted && !product.category_id" class="p-error">La catégorie est
+                                requise</small>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex gap-3">
                                 <div class="flex align-items-center">
-                                    <Checkbox id="is_active" v-model="product.is_active" :binary="true" />
                                     <label for="is_active" class="ml-2">Produit actif</label>
+                                    <Checkbox id="is_active" v-model="product.is_active" :binary="true" />
                                 </div>
-                            </div>
 
-                            <div class="field">
                                 <div class="flex align-items-center">
-                                    <Checkbox id="is_featured" v-model="product.is_featured" :binary="true" />
                                     <label for="is_featured" class="ml-2">Mettre en avant</label>
+                                    <Checkbox id="is_featured" v-model="product.is_featured" :binary="true" />
                                 </div>
                             </div>
-
-                            <!-- Images existantes -->
-                            <div v-if="existingImages.length > 0" class="field">
-                                <label>Images existantes</label>
-                                <div class="existing-images">
-                                    <div v-for="(image, index) in existingImages" :key="'existing-' + image.id"
-                                        class="image-preview-item">
-                                        <img :src="image.url" alt="Image existante" />
-                                        <div class="image-badge" v-if="image.is_thumbnail">
-                                            <Badge value="Image principale" severity="info" />
-                                        </div>
-                                        <div class="image-actions">
-                                            <Button v-if="!image.is_thumbnail" icon="pi pi-star"
-                                                class="p-button-rounded p-button-warning p-button-sm"
-                                                @click="setExistingAsThumbnail(image.id)"
-                                                title="Définir comme principale" />
-                                            <Button v-else icon="pi pi-star-fill"
-                                                class="p-button-rounded p-button-warning p-button-sm" disabled
-                                                title="Image principale" />
-                                            <Button icon="pi pi-times"
-                                                class="p-button-rounded p-button-danger p-button-sm"
-                                                @click="removeExistingImage(image.id)" title="Supprimer" />
-                                        </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="field">
+                        <label for="description">Description</label>
+                        <Editor id="description" v-model="product.description" editorStyle="height: 250px" />
+                    </div>
+                    <br>
+                    <div class="form-side-column">
+                        <!-- Images existantes -->
+                        <div v-if="existingImages.length > 0" class="field">
+                            <label>Images existantes</label>
+                            <div class="existing-images">
+                                <div v-for="(image, index) in existingImages" :key="'existing-' + image.id"
+                                    class="image-preview-item">
+                                    <img :src="image.url" alt="Image existante" />
+                                    <div class="image-badge" v-if="image.is_thumbnail">
+                                        <Badge value="Image principale" severity="info" />
+                                    </div>
+                                    <div class="image-actions">
+                                        <Button v-if="!image.is_thumbnail" icon="pi pi-star"
+                                            class="p-button-rounded p-button-warning p-button-sm"
+                                            @click="setExistingAsThumbnail(image.id)"
+                                            title="Définir comme principale" />
+                                        <Button v-else icon="pi pi-star-fill"
+                                            class="p-button-rounded p-button-warning p-button-sm" disabled
+                                            title="Image principale" />
+                                        <Button icon="pi pi-times" class="p-button-rounded p-button-danger p-button-sm"
+                                            @click="removeExistingImage(image.id)" title="Supprimer" />
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Upload de nouvelles images -->
-                            <div class="field">
-                                <label>Ajouter des images</label>
-                                <FileUpload mode="advanced" multiple accept="image/*" :maxFileSize="5000000"
-                                    customUpload @uploader="onImageUpload" :auto="true" chooseLabel="Choisir"
-                                    cancelLabel="Annuler">
-                                    <template #empty>
-                                        <p>Glissez-déposez les images ici pour les télécharger.</p>
-                                    </template>
-                                </FileUpload>
-                            </div>
+                        <!-- Upload de nouvelles images -->
+                        <div class="field">
+                            <label>Ajouter des images</label>
+                            <FileUpload mode="advanced" multiple accept="image/*" :maxFileSize="5000000" customUpload
+                                @uploader="onImageUpload" :auto="true" chooseLabel="Choisir" cancelLabel="Annuler">
+                                <template #empty>
+                                    <p>Glissez-déposez les images ici pour les télécharger.</p>
+                                </template>
+                            </FileUpload>
+                        </div>
 
-                            <!-- Aperçu des nouvelles images -->
-                            <div v-if="previewImages.length > 0" class="preview-images">
-                                <h3>Nouvelles images</h3>
-                                <div class="image-previews">
-                                    <div v-for="(image, index) in previewImages" :key="'new-' + index"
-                                        class="image-preview-item">
-                                        <img :src="image.preview" alt="Aperçu" />
-                                        <div class="image-actions">
-                                            <Button v-if="index !== thumbnailIndex" icon="pi pi-star"
-                                                class="p-button-rounded p-button-warning p-button-sm"
-                                                @click="setAsThumbnail(index)" title="Définir comme principale" />
-                                            <Button v-else icon="pi pi-star-fill"
-                                                class="p-button-rounded p-button-warning p-button-sm" disabled
-                                                title="Image principale" />
-                                            <Button icon="pi pi-times"
-                                                class="p-button-rounded p-button-danger p-button-sm"
-                                                @click="removeImage(index)" title="Supprimer" />
-                                        </div>
+                        <!-- Aperçu des nouvelles images -->
+                        <div v-if="previewImages.length > 0" class="preview-images">
+                            <h3>Nouvelles images</h3>
+                            <div class="image-previews">
+                                <div v-for="(image, index) in previewImages" :key="'new-' + index"
+                                    class="image-preview-item">
+                                    <img :src="image.preview" alt="Aperçu" />
+                                    <div class="image-actions">
+                                        <Button v-if="index !== thumbnailIndex" icon="pi pi-star"
+                                            class="p-button-rounded p-button-warning p-button-sm"
+                                            @click="setAsThumbnail(index)" title="Définir comme principale" />
+                                        <Button v-else icon="pi pi-star-fill"
+                                            class="p-button-rounded p-button-warning p-button-sm" disabled
+                                            title="Image principale" />
+                                        <Button icon="pi pi-times" class="p-button-rounded p-button-danger p-button-sm"
+                                            @click="removeImage(index)" title="Supprimer" />
                                     </div>
                                 </div>
                             </div>
@@ -168,7 +159,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
-import Dropdown from 'primevue/dropdown';
+import Select from 'primevue/select';
 import Editor from 'primevue/editor';
 import Checkbox from 'primevue/checkbox';
 import FileUpload from 'primevue/fileupload';
@@ -185,7 +176,7 @@ export default {
     components: {
         InputText,
         InputNumber,
-        Dropdown,
+        Select,
         Editor,
         Checkbox,
         FileUpload,
@@ -229,7 +220,8 @@ export default {
             try {
                 const response = await axios.get(`/api/admin/products/${productId}`, {
                     params: {
-                        with: ['category']
+                        with: ['category'],
+                        with_images: true
                     },
                     headers: {
                         Authorization: `Bearer ${authStore.token}`
@@ -243,6 +235,7 @@ export default {
                         product[key] = productData[key];
                     }
                 });
+
 
                 // Charger les images existantes
                 if (productData.images && productData.images.length > 0) {
@@ -260,7 +253,7 @@ export default {
                     detail: 'Impossible de charger le produit',
                     life: 3000
                 });
-                router.push({ name: 'products' });
+                router.push({ name: 'products.index' });
             } finally {
                 loading.value = false;
             }
@@ -305,9 +298,17 @@ export default {
                 formData.append('_method', 'PUT');
 
                 // Ajouter les champs textuels
+                // Ajouter les champs textuels et les booléens
                 Object.keys(product).forEach(key => {
-                    if (product[key] !== null && product[key] !== undefined && key !== 'id') {
-                        formData.append(key, product[key]);
+                    if (product[key] !== null && product[key] !== undefined) {
+                        // Traitement spécial pour les booléens
+                        if (typeof product[key] === 'boolean') {
+                            // Convertir en 0/1 ou envoyer la valeur réelle en string
+                            formData.append(key, product[key] ? '1' : '0');
+                            // Alternativement: formData.append(key, product[key].toString());
+                        } else {
+                            formData.append(key, product[key]);
+                        }
                     }
                 });
 
@@ -341,7 +342,7 @@ export default {
                 });
 
                 // Redirection vers la liste des produits
-                router.push({ name: 'products' });
+                router.push({ name: 'products.index' });
             } catch (error) {
                 console.error('Erreur lors de la mise à jour du produit:', error);
                 toast.add({
@@ -407,7 +408,7 @@ export default {
 
         const setExistingAsThumbnail = async (imageId) => {
             try {
-                await axios.post(`/api/admin/products/${product.id}/thumbnail/${imageId}`, {}, {
+                await axios.put(`/api/admin/products/${product.id}`, {}, {
                     headers: {
                         Authorization: `Bearer ${authStore.token}`
                     }

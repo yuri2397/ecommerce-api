@@ -1,11 +1,7 @@
 <template>
     <AdminLayout>
         <div class="products-page">
-            <div class="d-flex justify-content-between align-items-center">
-                <h1 class="card-title">Gestion des Produits</h1>
-                <Button label="Nouveau Produit" icon="pi pi-plus" class="p-button-success" @click="navigateToCreate" />
-            </div>
-            <br>
+
             <div class="card">
                 <div class="d-flex gap-2 align-items-center justify-content-between">
                     <div class="p-inputgroup d-flex w-100">
@@ -42,7 +38,7 @@
 
                     <Column field="name" header="Nom" sortable>
                         <template #body="slotProps">
-                            <router-link :to="{ name: 'products.show', params: { id: slotProps.data.id } }"
+                            <router-link :to="{ name: 'products.details', params: { id: slotProps.data.id } }"
                                 class="product-name-link">
                                 {{ slotProps.data.name }}
                             </router-link>
@@ -51,9 +47,10 @@
 
                     <Column field="price" header="Prix" sortable>
                         <template #body="slotProps">
-                            {{ formatPrice(slotProps.data.price) }}
-                            <span v-if="slotProps.data.sale_price" class="sale-price">
-                                {{ formatPrice(slotProps.data.sale_price) }}
+                            {{ formatPrice(slotProps.data.sale_price) }}
+                            <span v-if="slotProps.data.price !== slotProps.data.sale_price"
+                                class="sale-price">
+                                {{ formatPrice(slotProps.data.price) }}
                             </span>
                         </template>
                     </Column>

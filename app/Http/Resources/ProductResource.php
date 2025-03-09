@@ -32,9 +32,9 @@ class ProductResource extends JsonResource
                     return [
                         'id' => $media->id,
                         'url' => $media->getUrl(),
-                        'thumb_url' => $media->getUrl('thumb'),
-                        'medium_url' => $media->getUrl('medium'),
-                        'large_url' => $media->getUrl('large')
+                        // 'thumb_url' => $media->getUrl('thumb'),
+                        // 'medium_url' => $media->getUrl('medium'),
+                        // 'large_url' => $media->getUrl('large')
                     ];
                 });
             }),

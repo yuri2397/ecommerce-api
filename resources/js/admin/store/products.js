@@ -56,14 +56,14 @@ export const useProductsStore = defineStore('products', {
             }
         },
 
-        async fetchProductById(id, loadRelations = true) {
+        async fetchProductById(id, loadRelations = true, params = {}) {
             this.loading = true;
             this.error = null;
 
             const authStore = useAuthStore();
 
             try {
-                const params = loadRelations ? { with: ['category', 'comments'] } : {};
+                const params = loadRelations ? { with: ['category', 'comments',], with_images: true } : {};
 
                 const response = await axios.get(`/api/admin/products/${id}`, {
                     params,

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Utils\UsesUuid;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Product extends Model implements HasMedia
 {
@@ -23,6 +24,11 @@ class Product extends Model implements HasMedia
         'is_active',
         'is_featured',
         'discount_percentage'
+
+    ];
+
+    protected $appends = [
+        'total_discounted_price'
     ];
 
     protected $casts = [
@@ -53,4 +59,17 @@ class Product extends Model implements HasMedia
     {
         return $this->hasMany(CartItem::class);
     }
+
+    // Calcul du prix total avec remise
+    public function totalDiscountedPrice(): float
+    {
+        return $this->price - ($this->price * $this->discount_percentage / 100);
+    }
+
+    // Image principale du produit
+    public function thumbnail(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'thumbnail_id');
+    }
+
 }

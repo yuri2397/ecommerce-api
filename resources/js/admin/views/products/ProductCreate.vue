@@ -14,7 +14,7 @@
                         <div class="form-main-column">
                             <div class="row">
                                 <div class="col">
-                                    <label for="name">Nom du produit*</label>
+                                    <label for="name">Nom du produit <span class="text-danger">*</span></label>
                                     <InputText class="w-100" id="name" v-model="product.name"
                                         placeholder="Nom du produit"
                                         :class="{ 'p-invalid': submitted && !product.name }" aria-required="true" />
@@ -23,7 +23,7 @@
                                 </div>
 
                                 <div class="col">
-                                    <label for="price">Prix*</label>
+                                    <label for="price">Prix normal <span class="text-danger">*</span></label>
                                     <InputNumber class="w-100" id="price" v-model="product.price" mode="currency"
                                         currency="XOF" locale="fr-FR" :minFractionDigits="0" placeholder="Prix"
                                         :class="{ 'p-invalid': submitted && !product.price }" aria-required="true" />
@@ -34,12 +34,17 @@
                             <div class="row">
 
                                 <div class="col">
-                                    <label for="sale_price">Pourcentage de réduction</label>
-                                    <InputNumber class="w-100" id="sale_price" placeholder="Pourcentage de réduction"
-                                        v-model="product.sale_price" locale="fr-FR" :min="0" :max="100" :step="1" />
+                                    <label for="sale_price">Prix de vente <span class="text-danger">*</span></label>
+                                    <InputNumber class="w-100" id="sale_price" v-model="product.sale_price"
+                                        mode="currency" currency="XOF" locale="fr-FR" :minFractionDigits="0"
+                                        placeholder="Prix" :class="{ 'p-invalid': submitted && !product.sale_price }"
+                                        aria-required="true" />
+                                    <small v-if="submitted && !product.sale_price" class="p-error">Le prix de vente
+                                        est requis</small>
                                 </div>
                                 <div class="col">
-                                    <label for="stock_quantity">Quantité en stock*</label>
+                                    <label for="stock_quantity">Quantité en stock <span
+                                            class="text-danger">*</span></label>
                                     <InputNumber class="w-100" id="stock_quantity" v-model="product.stock_quantity"
                                         showButtons :min="0" :step="1"
                                         :class="{ 'p-invalid': submitted && product.stock_quantity === null }"
@@ -52,7 +57,7 @@
                             <br>
                             <div class="row">
                                 <div class="col">
-                                    <label for="category_id">Catégorie*</label>
+                                    <label for="category_id">Catégorie <span class="text-danger">*</span></label>
                                     <Select v-model="product.category_id" :options="categories" optionLabel="name"
                                         optionValue="id" placeholder="Sélectionner une catégorie" class="w-100"
                                         :filter="true" :showClear="true" @filter="onFilterCategories"
