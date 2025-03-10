@@ -13,6 +13,7 @@ use App\Http\Controllers\MediaController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Client\ClientProductController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
@@ -359,5 +360,12 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
         Route::post('/products/{product}/reorder', [MediaController::class, 'reorder'])
             ->name('media.admin.reorder')
             ->middleware('permission:media.update');
+    });
+});
+
+
+Route::prefix('clients')->group(function () {
+    Route::prefix('products')->group(function () {
+        Route::get('/products/featured', [ClientProductController::class, 'getFeaturedProducts']);
     });
 });
