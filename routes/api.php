@@ -13,7 +13,10 @@ use App\Http\Controllers\MediaController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Client\ClientProductController;
+use App\Http\Controllers\ClientProductController;
+use App\Http\Controllers\ClientCartController;
+use App\Http\Controllers\ClientCategoryController;
+use App\Http\Controllers\ClientOrderController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
@@ -364,8 +367,86 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
 });
 
 
-Route::prefix('clients')->group(function () {
+// Routes API Client
+Route::prefix('client')->group(function () {
+    // Routes pour les produits
     Route::prefix('products')->group(function () {
-        Route::get('/products/featured', [ClientProductController::class, 'getFeaturedProducts']);
+        // Produits mis en avant
+        Route::get('/featured', [ClientProductController::class, 'getFeaturedProducts']);
+
+        // Nouveaux produits
+        Route::get('/new', [ClientProductController::class, 'getNewProducts']);
+
+        // Produits en promotion
+        Route::get('/on-sale', [ClientProductController::class, 'getProductsOnSale']);
+
+        // Recherche de produits
+        Route::get('/search', [ClientProductController::class, 'searchProducts']);
+
+        // Produits par catégorie
+        Route::get('/category/{category:slug}', [ClientProductController::class, 'getProductsByCategory']);
+
+        // Détails d'un produit
+        Route::get('/{product:slug}', [ClientProductController::class, 'getProductDetails']);
+
+        // Récupérer plusieurs produits par leurs IDs (pour recently viewed)
+        Route::post('/batch', [ClientProductController::class, 'getProductsByIds']);
+
+        // Commentaires d'un produit
+        Route::get('/{product}/comments', [ClientProductController::class, 'getProductComments']);
+
+        // Produits similaires
+        Route::get('/{product}/related', [ClientProductController::class, 'getRelatedProducts']);
+    });
+
+    // Routes pour les catégories
+    Route::prefix('categories')->group(function () {
+        // Liste des catégories
+        Route::get('/', [ClientCategoryController::class, 'getCategories']);
+
+        // Structure arborescente des catégories
+        Route::get('/tree', [ClientCategoryController::class, 'getCategoryTree']);
+
+        // Détails d'une catégorie
+        Route::get('/{category:slug}', [ClientCategoryController::class, 'getCategoryDetails']);
+
+        // Sous-catégories
+        Route::get('/{category:slug}/children', [ClientCategoryController::class, 'getSubcategories']);
+    });
+
+    // Routes pour le panier (nécessitant authentification)
+    Route::middleware('auth:sanctum')->prefix('cart')->group(function () {
+        // Récupérer le panier actuel
+        Route::get('/', [ClientCartController::class, 'getCurrentCart']);
+
+        // Ajouter un produit au panier
+        Route::post('/items', [ClientCartController::class, 'addToCart']);
+
+        // Mettre à jour la quantité d'un article
+        Route::put('/items/{cartItem}', [ClientCartController::class, 'updateCartItem']);
+
+        // Supprimer un article du panier
+        Route::delete('/items/{cartItem}', [ClientCartController::class, 'removeCartItem']);
+
+        // Vider le panier
+        Route::delete('/clear', [ClientCartController::class, 'clearCart']);
+    });
+
+    // Routes pour les commandes (nécessitant authentification)
+    Route::middleware('auth:sanctum')->prefix('orders')->group(function () {
+        // Liste des commandes de l'utilisateur
+        Route::get('/', [ClientOrderController::class, 'getMyOrders']);
+
+        // Détails d'une commande
+        Route::get('/{order}', [ClientOrderController::class, 'getOrderDetails']);
+
+        // Créer une commande à partir du panier
+        Route::post('/', [ClientOrderController::class, 'createOrder']);
+
+        // Annuler une commande
+        Route::put('/{order}/cancel', [ClientOrderController::class, 'cancelOrder']);
+
+        // Payer une commande
+        Route::post('/{order}/pay', [ClientOrderController::class, 'payOrder']);
     });
 });
