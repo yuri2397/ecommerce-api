@@ -22,14 +22,18 @@ class ClientCategoryController extends Controller
         // Validation des paramètres
         $validated = $request->validate([
             'parent_id' => 'nullable|uuid|exists:categories,id',
-            'with_products_count' => 'nullable|boolean',
-            'with_children' => 'nullable|boolean',
-            'featured_only' => 'nullable|boolean'
+            'with_products_count' => 'nullable',
+            'with_children' => 'nullable',
+            'limit' => 'nullable|integer|min:1|max:20',
+            'page' => 'nullable|integer|min:1'
         ]);
 
-        $cacheKey = 'client_categories_' . md5(json_encode($validated));
+        $limit = $validated['limit'] ?? 10;
+        $page = $validated['page'] ?? 1;
 
-        return Cache::remember($cacheKey, now()->addHours(6), function () use ($validated) {
+        $cacheKey = 'client_categories_' . md5(json_encode($validated));
+        // remove cache
+        return Cache::remember($cacheKey, now()->addMinute(1), function () use ($validated, $limit, $page) {
             $query = Category::where('is_active', true);
 
             // Filtrer par catégorie parente si spécifié
@@ -38,11 +42,6 @@ class ClientCategoryController extends Controller
             } else {
                 // Par défaut, récupérer uniquement les catégories parentes (niveau supérieur)
                 $query->whereNull('parent_id');
-            }
-
-            // Filtrer les catégories mises en avant si demandé
-            if (isset($validated['featured_only']) && $validated['featured_only']) {
-                $query->where('is_featured', true);
             }
 
             // Charger les relations si nécessaire
@@ -56,7 +55,7 @@ class ClientCategoryController extends Controller
             }
 
             // Tri des catégories
-            $categories = $query->orderBy('name')->get();
+            $categories = $query->orderBy('name')->paginate($limit, ['*'], 'page', $page);
 
             // Ajouter le comptage des produits si demandé
             if (isset($validated['with_products_count']) && $validated['with_products_count']) {
@@ -232,7 +231,7 @@ class ClientCategoryController extends Controller
         // Validation des paramètres
         $validated = $request->validate([
             'limit' => 'nullable|integer|min:1|max:20',
-            'with_images' => 'nullable|boolean'
+            'with_images' => 'nullable'
         ]);
 
         $limit = $validated['limit'] ?? 10;

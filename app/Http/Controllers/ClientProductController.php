@@ -25,8 +25,8 @@ class ClientProductController extends Controller
         $validated = $request->validate([
             'limit' => 'nullable|integer|min:1|max:50',
             'category_id' => 'nullable|uuid|exists:categories,id',
-            'with_discount' => 'nullable|boolean',
-            'with_images' => 'nullable|boolean',
+            'with_discount' => 'nullable',
+            'with_images' => 'nullable',
             'price_min' => 'nullable|numeric|min:0',
             'price_max' => 'nullable|numeric|min:0'
         ]);
@@ -36,7 +36,7 @@ class ClientProductController extends Controller
         $cacheKey = 'featured_products_' . md5(json_encode($validated));
 
         // Utilisation du cache pour optimiser les performances
-        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($validated, $limit) {
+        return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($validated, $limit) {
             $query = Product::where('is_active', true)
                 ->where('is_featured', true)
                 ->where('stock_quantity', '>', 0);
@@ -146,7 +146,7 @@ class ClientProductController extends Controller
     {
         // Validation des paramètres
         $validated = $request->validate([
-            'q' => 'required|string|min:2|max:100',
+            'q' => 'nullable|string|max:100',
             'limit' => 'nullable|integer|min:1|max:50',
             'page' => 'nullable|integer|min:1',
             'category_id' => 'nullable|uuid|exists:categories,id',
@@ -160,6 +160,8 @@ class ClientProductController extends Controller
         $query = Product::where('is_active', true)
             ->where('stock_quantity', '>', 0)
             ->where(function ($q) use ($validated) {
+                if ($validated && $validated['q']) {
+                }
                 $searchTerm = '%' . $validated['q'] . '%';
                 $q->where('name', 'like', $searchTerm)
                     ->orWhere('description', 'like', $searchTerm)
@@ -201,7 +203,7 @@ class ClientProductController extends Controller
             'limit' => 'nullable|integer|min:1|max:50',
             'page' => 'nullable|integer|min:1',
             'with_subcategories' => 'nullable|boolean',
-            'with_images' => 'nullable|boolean',
+            'with_images' => 'nullable',
             'price_min' => 'nullable|numeric|min:0',
             'price_max' => 'nullable|numeric|min:0',
             'with_discount' => 'nullable|boolean',
@@ -238,6 +240,7 @@ class ClientProductController extends Controller
         return ProductResource::collection($products);
     }
 
+
     /**
      * Récupère les détails d'un produit
      *
@@ -254,9 +257,9 @@ class ClientProductController extends Controller
 
         // Validation des paramètres
         $validated = $request->validate([
-            'with_images' => 'nullable|boolean',
-            'with_related' => 'nullable|boolean',
-            'with_comments' => 'nullable|boolean'
+            'with_images' => 'nullable',
+            'with_related' => 'nullable',
+            'with_comments' => 'nullable'
         ]);
 
         // Charger les relations
@@ -447,6 +450,11 @@ class ClientProductController extends Controller
         // Charger les relations si nécessaire
         if (isset($filters['with_images']) && $filters['with_images']) {
             $query->with('media');
+        }
+
+        // with category
+        if (isset($filters['with_category']) && $filters['with_category']) {
+            $query->with('category');
         }
 
         return $query;

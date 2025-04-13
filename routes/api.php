@@ -387,7 +387,7 @@ Route::prefix('client')->group(function () {
         Route::get('/category/{category:slug}', [ClientProductController::class, 'getProductsByCategory']);
 
         // Détails d'un produit
-        Route::get('/{product:slug}', [ClientProductController::class, 'getProductDetails']);
+        Route::get('/{product}', [ClientProductController::class, 'getProductDetails']);
 
         // Récupérer plusieurs produits par leurs IDs (pour recently viewed)
         Route::post('/batch', [ClientProductController::class, 'getProductsByIds']);

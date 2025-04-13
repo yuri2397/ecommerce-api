@@ -17,7 +17,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class ProductController extends Controller
 {
     // Liste des relations autorisées
-    protected $allowedRelations = ['category', 'comments', 'with_images'];
+    protected $allowedRelations = ['category', 'comments'];
 
     /**
      * Afficher la liste des produits
@@ -308,10 +308,10 @@ class ProductController extends Controller
             // Traitement des images
             if ($request->hasFile('images')) {
                 // add many files from the request
-                foreach ($request->file('images') as $image) {
-                    $product->addMedia($image)
-                        ->toMediaCollection('product_images');
-                }
+                $product->addMultipleMediaFromRequest(['images'])
+                    ->each(function ($fileAdder) {
+                        $fileAdder->toMediaCollection('product_images');
+                    });
             }
 
             // Traitement de l'image principale (thumbnail)

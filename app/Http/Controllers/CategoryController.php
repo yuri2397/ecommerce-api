@@ -158,6 +158,8 @@ class CategoryController extends Controller
         $category->update($validated);
 
         if ($request->hasFile('icon')) {
+            // remove old icon
+            $category->clearMediaCollection(Category::ICON_COLLECTION);
             $category->addMediaFromRequest('icon')->toMediaCollection(Category::ICON_COLLECTION);
         }
 

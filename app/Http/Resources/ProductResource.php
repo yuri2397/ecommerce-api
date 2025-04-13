@@ -32,12 +32,10 @@ class ProductResource extends JsonResource
                     return [
                         'id' => $media->id,
                         'url' => $media->getUrl(),
-                        // 'thumb_url' => $media->getUrl('thumb'),
-                        // 'medium_url' => $media->getUrl('medium'),
-                        // 'large_url' => $media->getUrl('large')
                     ];
                 });
             }),
+
             'main_image_url' => $this->main_image_url,
             'comments' => ProductCommentResource::collection($this->whenLoaded('comments')),
             'comments_count' => $this->when($this->comments_count !== null, $this->comments_count),
