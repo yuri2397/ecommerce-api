@@ -23,7 +23,7 @@ return new class extends Migration
         });
 
         // shops
-        Schema::create('shops', function (Blueprint $table) {
+        Schema::table('shops', function (Blueprint $table) {
             $table->foreignUuid('user_id')->nullable()->constrained()->cascadeOnDelete();
         });
 
