@@ -22,6 +22,11 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // shops
+        Schema::create('shops', function (Blueprint $table) {
+            $table->foreignUuid('user_id')->nullable()->after('is_active')->constrained()->cascadeOnDelete();
+        });
+
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
