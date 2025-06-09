@@ -24,7 +24,7 @@ return new class extends Migration
 
         // shops
         Schema::create('shops', function (Blueprint $table) {
-            $table->foreignUuid('user_id')->nullable()->after('is_active')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('user_id')->nullable()->constrained()->cascadeOnDelete();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
