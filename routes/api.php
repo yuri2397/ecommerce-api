@@ -159,8 +159,6 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
 
         Route::patch('/{category}/deactivate', [CategoryController::class, 'deactivate'])
             ->name('categories.admin.deactivate');
-
-
     });
 
     // Routes CRUD principales pour les produits
@@ -205,7 +203,6 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
 
         Route::get('/dropdown', [ProductController::class, 'dropdown']);
         Route::get('/stats', [ProductController::class, 'stats']);
-
     });
 
     // Routes admin pour les commentaires
@@ -430,6 +427,9 @@ Route::prefix('client')->group(function () {
 
         // Vider le panier
         Route::delete('/clear', [ClientCartController::class, 'clearCart']);
+
+        // Obtenir le total du panier
+        Route::get('/total', [ClientCartController::class, 'getCartTotal']);
     });
 
     // Routes pour les commandes (nécessitant authentification)
